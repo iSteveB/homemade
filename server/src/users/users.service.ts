@@ -6,18 +6,18 @@ import { NotFoundException } from '@nestjs/common';
 @Injectable()
 export class UsersService {
   private users = [
-    { id: 1, name: 'John Doe', role: 'USER' },
-    { id: 2, name: 'Jane Doe', role: 'ADMIN' },
-    { id: 3, name: 'Jim Doe', role: 'GUEST' },
-    { id: 4, name: 'Sally Doe', role: 'USER' },
-    { id: 5, name: 'Bob Doe', role: 'ADMIN' },
-    { id: 6, name: 'Tim Doe', role: 'GUEST' },
-    { id: 7, name: 'Linda Doe', role: 'USER' },
-    { id: 8, name: 'Frank Doe', role: 'ADMIN' },
-    { id: 9, name: 'Karen Doe', role: 'GUEST' },
-    { id: 10, name: 'Dave Doe', role: 'USER' },
-    { id: 11, name: 'Pat Doe', role: 'ADMIN' },
-    { id: 12, name: 'Joe Doe', role: 'GUEST' },
+    { id: 1, name: 'John Doe', role: 'USER', email: 'john.doe@example.com' },
+    { id: 2, name: 'Jane Doe', role: 'ADMIN', email: 'jane.doe@example.com' },
+    { id: 3, name: 'Jim Doe', role: 'GUEST', email: 'jim.doe@example.com' },
+    { id: 4, name: 'Sally Doe', role: 'USER', email: 'sally.doe@example.com' },
+    { id: 5, name: 'Bob Doe', role: 'ADMIN', email: 'bob.doe@example.com' },
+    { id: 6, name: 'Tim Doe', role: 'GUEST', email: 'tim.doe@example.com' },
+    { id: 7, name: 'Linda Doe', role: 'USER', email: 'linda.doe@example.com' },
+    { id: 8, name: 'Frank Doe', role: 'ADMIN', email: 'frank.doe@example.com' },
+    { id: 9, name: 'Karen Doe', role: 'GUEST', email: 'karen.doe@example.com' },
+    { id: 10, name: 'Dave Doe', role: 'USER', email: 'dave.doe@example.com' },
+    { id: 11, name: 'Pat Doe', role: 'ADMIN', email: 'pat.doe@example.com' },
+    { id: 12, name: 'Joe Doe', role: 'GUEST', email: 'joe.doe@example.com' },
   ];
 
   findAll(role?: CreateUserDto['role']) {
