@@ -7,19 +7,228 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  username  String   @unique
-  name      String
-  role      Role     @default(USER)
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
 }
 
-enum Role {
-  USER
-  ADMIN
-  GUEST
+enum Cost {
+  CHEAP
+  NORMAL
+  EXPENSIVE
+}
+
+model User {
+  id        String           @id @default(uuid())
+  isAdmin   Boolean          @default(false)
+  username  String           @unique @db.VarChar(100)
+  email     String           @unique @db.VarChar(100)
+  password  String
+  biography String?          @db.VarChar(500)
+  avatar    String?
+  recipes   Recipe[]
+  favorites FavoriteRecipe[]
+  following UserFollowing[]
+  followers UserFollowers[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  Comment   Comment[]
+
+  @@index([username, email])
+}
+
+model Recipe {
+  id             String               @id @default(uuid())
+  user           User                 @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId         String
+  title          String               @db.VarChar(150)
+  content        String
+  description    String?              @db.VarChar(500)
+  slug           String               @unique
+  difficulty     Difficulty?
+  cost           Cost?
+  duration       DurationRecipes[]
+  category       CategoryRecipes[]
+  pictures       PicturesRecipes[]
+  ingredients    IngredientsRecipes[]
+  ustensils      RecipesUstensils[]
+  steps          RecipesSteps[]
+  tags           RecipesTags[]
+  comments       RecipeComments[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  FavoriteRecipe FavoriteRecipe[]
+  Comment        Comment[]
+}
+
+model FavoriteRecipe {
+  userId    String
+  recipeId  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+
+  @@id([userId, recipeId])
+}
+
+model Duration {
+  id              String            @id @default(uuid())
+  preparation     Int               @default(0) @db.SmallInt
+  cooking         Int               @default(0) @db.SmallInt
+  rest            Int               @default(0) @db.SmallInt
+  DurationRecipes DurationRecipes[]
+}
+
+model DurationRecipes {
+  recipeId   String
+  durationId String
+  recipe     Recipe   @relation(fields: [recipeId], references: [id])
+  duration   Duration @relation(fields: [durationId], references: [id])
+
+  @@id([recipeId, durationId])
+}
+
+model Tag {
+  id          String        @id @default(uuid())
+  name        String
+  RecipesTags RecipesTags[]
+}
+
+model RecipesTags {
+  recipeId String
+  tagId    String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+  tag      Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([recipeId, tagId])
+}
+
+model Picture {
+  id              String            @id @default(uuid())
+  name            String
+  url             String
+  description     String?
+  PicturesRecipes PicturesRecipes[]
+}
+
+model PicturesRecipes {
+  recipeId  String
+  pictureId String
+  recipe    Recipe  @relation(fields: [recipeId], references: [id])
+  picture   Picture @relation(fields: [pictureId], references: [id])
+
+  @@id([recipeId, pictureId])
+}
+
+model Category {
+  id              String            @id @default(uuid())
+  name            String
+  CategoryRecipes CategoryRecipes[]
+}
+
+model CategoryRecipes {
+  recipeId   String
+  categoryId String
+  recipe     Recipe   @relation(fields: [recipeId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([recipeId, categoryId])
+}
+
+model Ingredient {
+  id                 String               @id @default(uuid())
+  name               String
+  IngredientsRecipes IngredientsRecipes[]
+}
+
+model IngredientsRecipes {
+  recipeId     String
+  ingredientId String
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@id([recipeId, ingredientId])
+}
+
+model Ustensil {
+  id               String             @id @default(uuid())
+  name             String
+  RecipesUstensils RecipesUstensils[]
+}
+
+model RecipesUstensils {
+  recipeId   String
+  ustensilId String
+  recipe     Recipe   @relation(fields: [recipeId], references: [id])
+  ustensil   Ustensil @relation(fields: [ustensilId], references: [id])
+
+  @@id([recipeId, ustensilId])
+}
+
+model Step {
+  id           String         @id @default(uuid())
+  description  String
+  order        Int
+  RecipesSteps RecipesSteps[]
+}
+
+model RecipesSteps {
+  recipeId String
+  stepId   String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  step     Step   @relation(fields: [stepId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([recipeId, stepId])
+}
+
+model Comment {
+  id             String           @id @default(uuid())
+  text           String
+  userId         String
+  recipeId       String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  recipe         Recipe           @relation(fields: [recipeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  RecipeComments RecipeComments[]
+}
+
+model RecipeComments {
+  recipeId  String
+  commentId String
+  recipe    Recipe  @relation(fields: [recipeId], references: [id])
+  comment   Comment @relation(fields: [commentId], references: [id])
+
+  @@id([recipeId, commentId])
+}
+
+model Follower {
+  id            String          @id @default(uuid())
+  createdAt     DateTime        @default(now())
+  UserFollowers UserFollowers[]
+}
+
+model UserFollowers {
+  userId     String
+  followerId String
+  user       User     @relation(fields: [userId], references: [id])
+  follower   Follower @relation(fields: [followerId], references: [id])
+
+  @@id([userId, followerId])
+}
+
+model Following {
+  id            String          @id @default(uuid())
+  userFollowing UserFollowing[]
+  createdAt     DateTime        @default(now())
+}
+
+model UserFollowing {
+  userId      String
+  followingId String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  following   Following @relation(fields: [followingId], references: [id])
+
+  @@id([userId, followingId])
 }
