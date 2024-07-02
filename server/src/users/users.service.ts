@@ -11,11 +11,7 @@ export class UsersService {
     return this.databaseService.user.create({ data: createUserDto });
   }
 
-  async findAll(role?: 'ADMIN' | 'USER' | 'GUEST') {
-    if (role) {
-      return this.databaseService.user.findMany({ where: { role } });
-    }
-
+  async findAll() {
     return this.databaseService.user.findMany();
   }
 

@@ -14,8 +14,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Query('role') role?: 'ADMIN' | 'USER' | 'GUEST') {
-    return this.usersService.findAll(role);
+  findAll() {
+    return this.usersService.findAll();
   }
 
   @Get(':id')
