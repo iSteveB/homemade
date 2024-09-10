@@ -15,4 +15,9 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('should delete a user', async () => {
+    const result = await service.delete('some-id');
+    expect(result).toBeDefined();
+  });
 });

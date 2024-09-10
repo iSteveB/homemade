@@ -40,14 +40,16 @@ export class AuthService {
   async login(user: any) {
     const payload = { username: user.username, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload, {expiresIn: '1h'}),
-      refresh_token: this.jwtService.sign(payload, {expiresIn: '7d'})
+      access_token: this.jwtService.sign(payload, { expiresIn: '1h' }),
+      refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
   }
 
   async refreshToken(refreshToken: string) {
     try {
-      const payload = this.jwtService.verify(refreshToken, { secret: jwtConstants.secret });
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: jwtConstants.secret,
+      });
       const newPayload = { username: payload.username, sub: payload.sub };
       return {
         access_token: this.jwtService.sign(newPayload, { expiresIn: '1h' }),
