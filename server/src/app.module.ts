@@ -9,6 +9,8 @@ import { CommentsModule } from './comments/comments.module';
 import { TagsModule } from './tags/tags.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { UploadModule } from './upload/upload.module';
+import { AwsService } from './aws/aws.service';
 
 @Module({
   imports: [
@@ -31,8 +33,13 @@ import { UsersModule } from './users/users.module';
     TagsModule,
     AuthModule,
     UsersModule,
+    UploadModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    AwsService,
+  ],
 })
 export class AppModule {}
