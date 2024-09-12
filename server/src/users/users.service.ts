@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
@@ -10,8 +10,8 @@ export class UsersService {
     return await this.databaseService.user.findMany();
   }
 
-  async findOne(username: string) {
-    return await this.databaseService.user.findUnique({ where: { username } });
+  async findOne(email: string): Promise<User | undefined> {
+    return await this.databaseService.user.findUnique({ where: { email } });
   }
 
   async create(createUserDto: Prisma.UserCreateInput) {
