@@ -17,7 +17,10 @@ export class UsersController {
   }
 
   @Patch(':userId')
-  async update(@Param('userId') id: string, @Body() updateUserDto: Prisma.UserUpdateInput) {
+  async update(
+    @Param('userId') id: string,
+    @Body() updateUserDto: Prisma.UserUpdateInput,
+  ) {
     return this.usersService.update(id, {
       ...updateUserDto,
       updatedAt: new Date(),
@@ -29,4 +32,3 @@ export class UsersController {
     return this.usersService.delete(id);
   }
 }
-
