@@ -1,4 +1,4 @@
-import { Injectable,  } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -19,7 +19,10 @@ export class TagsService {
   }
 
   async update(id: string, updateTagDto: Prisma.TagUpdateInput) {
-    return this.databaseService.tag.update({ where: { id }, data: { ...updateTagDto } });
+    return this.databaseService.tag.update({
+      where: { id },
+      data: { ...updateTagDto },
+    });
   }
 
   async delete(id: string) {

@@ -10,7 +10,7 @@ export class RecipesService {
     return this.databaseService.recipe.create({ data: { ...createRecipeDto } });
   }
 
-  async findAll(userId?: string) {
+  async findAllByUser(userId?: string) {
     if (userId) {
       return this.databaseService.recipe.findMany({ where: { userId } });
     }
@@ -23,10 +23,40 @@ export class RecipesService {
   }
 
   async update(id: string, updateRecipeDto: Prisma.RecipeUpdateInput) {
-    return this.databaseService.recipe.update({ where: { id }, data: { ...updateRecipeDto } });
+    return this.databaseService.recipe.update({
+      where: { id },
+      data: { ...updateRecipeDto },
+    });
   }
 
   async delete(id: string) {
-    return this.databaseService.recipe.delete({ where: { id } });
+    return this.databaseService.$transaction(async (prisma) => {
+      await prisma.durationRecipes.deleteMany({
+        where: { recipeId: id },
+      });
+      await prisma.categoryRecipes.deleteMany({
+        where: { recipeId: id },
+      });
+      await prisma.picturesRecipes.deleteMany({
+        where: { recipeId: id },
+      });
+      await prisma.ingredientsRecipes.deleteMany({
+        where: { recipeId: id },
+      });
+      await prisma.recipesUstensils.deleteMany({
+        where: { recipeId: id },
+      });
+      await prisma.recipesSteps.deleteMany({
+        where: { recipeId: id },
+      });
+      await prisma.recipesTags.deleteMany({
+        where: { recipeId: id },
+      });
+      await prisma.recipeComments.deleteMany({
+        where: { recipeId: id },
+      });
+
+      return prisma.recipe.delete({ where: { id } });
+    });
   }
 }

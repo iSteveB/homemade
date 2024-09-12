@@ -1,30 +1,41 @@
-import { Controller, Get, Post, Body, Query, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { RecipesService } from './recipes.service';
-import { Throttle } from '@nestjs/throttler';
 
-@Throttle({ user: { ttl: 1000, limit: 3 } })
 @Controller('recipes')
 export class RecipesController {
   constructor(private readonly recipesService: RecipesService) {}
 
   @Post()
-  create( @Body() createRecipeDto: Prisma.RecipeCreateInput) {
+  create(@Body() createRecipeDto: Prisma.RecipeCreateInput) {
+    console.log(createRecipeDto);
     return this.recipesService.create(createRecipeDto);
   }
 
   @Get()
-  findAll(@Query('username') username?: string) {
-    return this.recipesService.findAll(username);
+  findAll(@Query('userId') userId?: string) {
+    return this.recipesService.findAllByUser(userId);
   }
 
-  @Get(':params')
-  findOne(@Param('params') params: string) {
-    return this.recipesService.findOne(params);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.recipesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRecipeDto: Prisma.RecipeUpdateInput) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRecipeDto: Prisma.RecipeUpdateInput,
+  ) {
     return this.recipesService.update(id, updateRecipeDto);
   }
 
@@ -32,5 +43,4 @@ export class RecipesController {
   delete(@Param('id') id: string) {
     return this.recipesService.delete(id);
   }
-
 }
