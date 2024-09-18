@@ -1,8 +1,18 @@
+"use client";
+import useThemeStore from "@/lib/store/useThemeStore";
+import { useTheme } from "../hook/useTheme";
 
-export default function Home() {
+
+function App() {
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
+
+  useTheme();
+
   return (
-    <main className="">
-      <h1>Home</h1>
-    </main>
+    <div>
+    
+    </div>
   );
 }
+
+export default App;
