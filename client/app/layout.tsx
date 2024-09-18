@@ -1,22 +1,27 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import ReactQueryProvider from '../lib/providers/ReactQueryProvider';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Homemade",
-  description: "Share your Taste",
+	title: 'Homemade',
+	description: 'Share your Taste',
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="fr" className="dark">
-      <body className={inter.className}>{children}</body>
-    </html>
-  );
+	return (
+		<html lang='fr' className='dark'>
+			<body className={inter.className}>
+					<ReactQueryProvider>
+					{children}
+					</ReactQueryProvider>
+			</body>
+		</html>
+	);
 }
