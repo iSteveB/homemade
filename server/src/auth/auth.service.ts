@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -53,10 +57,16 @@ export class AuthService {
   }
 
   async createUser(data: Prisma.UserCreateInput) {
-    const isUserExisting = await this.usersService.getUserByEmail(data.email);
+    const isEmailExisting = await this.usersService.getUserByEmail(data.email);
+    if (isEmailExisting) {
+      throw new ConflictException('Cette adresse email est déjà utilisée.');
+    }
+    const isUsernameExisting = await this.usersService.getUserByUsername(
+      data.username,
+    );
 
-    if (isUserExisting) {
-      throw new Error('Cette adresse email est déjà utilisée.');
+    if (isUsernameExisting) {
+      throw new ConflictException("Ce nom d'utilisateur est déjà utilisé.");
     }
 
     const hashedPassword = await this.hashPassword(data.password);
