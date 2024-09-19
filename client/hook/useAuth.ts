@@ -27,12 +27,20 @@ const useAuth = () => {
         body: JSON.stringify(credentials),
       });
       if (!response.ok) {
-        throw new Error('Signup failed');
-      }
-      const data = await response.json();
-      setToken(data.access_token);
-      return data.access_token;
-    }
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Signup failed');
+			}
+      const token: Response = await response.json();
+			return token;
+		},
+		onSuccess: (token) => {
+			setToken(token.access_token);
+		},
+
+		onError: (error: Error) => {
+			clearToken();
+			return error.message;
+		},
   });
 
 	const loginMutation = useMutation({
@@ -42,13 +50,23 @@ const useAuth = () => {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(credentials),
 			});
-			const token: Response = await response.json(); 
-			if (token) {
-				setToken(token.access_token);
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Login failed');
 			}
-
+			const token: Response = await response.json(); 
 			return token;
 		},
+
+		onSuccess: (token) => {
+			setToken(token.access_token);
+		},
+
+		onError: (error) => {
+			clearToken();
+			return error.message;
+		},
+
 	});
 
 	const logout = () => {
@@ -59,9 +77,11 @@ const useAuth = () => {
 		login: loginMutation.mutate,
 		logout,
 		loginError: loginMutation.isError,
+		loginErrorMessage: loginMutation.error?.message,
 		loginIsLoading: loginMutation.isPending,
     signup: signupMutation.mutate,
     signupError: signupMutation.isError,
+		signupErrorMessage: signupMutation.error?.message,
     signupIsLoading: signupMutation.isPending
 	};
 };
