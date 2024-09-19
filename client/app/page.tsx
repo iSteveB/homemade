@@ -1,71 +1,18 @@
-'use client';
-
 import React from 'react';
-import useAuth from '@/hook/useAuth';
-
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-const queryClient = new QueryClient();
-
+import AuthForm from '../components/Auth/AuthForm';
 
 function App() {
-	const { login, loginError, loginIsLoading, logout, signup, signupError, signupIsLoading  } = useAuth();
-
-	const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		const email = e.currentTarget.email.value;
-		const password = e.currentTarget.password.value;
-		login({ email, password });
-	};
-
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const email = e.currentTarget.email.value;
-    const password = e.currentTarget.password.value;
-    const username = e.currentTarget.username.value;
-    signup({ email, password, username });
-  };
-
 	return (
-    <QueryClientProvider client={queryClient}>
-		<div>
-			<form onSubmit={handleLogin}>
-				<input type='email' name='email' placeholder='Email' required />
-				<input
-					type='password'
-					name='password'
-					placeholder='Password'
-					required
-				/>
-				<button type='submit' disabled={loginIsLoading}>
-					{loginIsLoading ? 'Logging in...' : 'Login'}
-				</button>
-				{loginError && <div>Login failed</div>}
-			</form>
-
-      <button onClick={logout}>Logout</button>
-
-      <form onSubmit={handleRegister}>
-        <input type='email' name='email' placeholder='Email' required />
-        <input
-          type='password'
-          name='password'
-          placeholder='Password'
-          required
-        />
-        <input
-          type='text'
-          name='username'
-          placeholder='Username'
-          required
-        />
-        {signupError && <div>Signup failed</div>}
-        <button type='submit' disabled={signupIsLoading}>
-          {signupIsLoading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
-
-		</div>
-    </QueryClientProvider>
+		<main className='flex min-h-screen items-center justify-between p-24 text-black'>
+			<div className='z-10 w-1/2 items-left justify-start font-mono text-sm lg:flex lg:flex-col gap-4'>
+				<p className='text-2xl'>Share your Taste</p>
+				<h1 className='text-8xl font-bold'>Homemade</h1>
+				<p className='text-2xl'>Partagez vos recettes préférées avec le monde entier. </p>
+			</div>
+			<div className='w-1/2'>
+				<AuthForm />
+			</div>
+		</main>
 	);
 }
 

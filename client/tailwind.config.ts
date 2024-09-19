@@ -9,12 +9,18 @@ const config: Config = {
 	],
 	theme: {
 		extend: {
-			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)',
+			colors: {
+				primary: '#53795A',
+				secondary: '#333135',
+				accent: '#F5B651',
+				background: '#F9F5F1',
+				dark: {
+					primary: '#333135',
+					secondary: '#53795A',
+					accent: '#F5B651',
+					background: '#1A1A1A',
+				},
 			},
-			colors: {},
 		},
 	},
 	variants: {
