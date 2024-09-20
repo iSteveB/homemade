@@ -4,11 +4,11 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UserPayload } from './jwt.strategy';
 import { DatabaseService } from 'src/database/database.service';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -56,7 +56,7 @@ export class AuthService {
     };
   }
 
-  async createUser(data: Prisma.UserCreateInput) {
+  async createUser(data: CreateUserDto) {
     const isEmailExisting = await this.usersService.getUserByEmail(data.email);
     if (isEmailExisting) {
       throw new ConflictException('Cette adresse email est déjà utilisée.');
