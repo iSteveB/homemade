@@ -1,5 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
-import useAuthStore from '@/lib/store/useAuthStore';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 interface LoginCredentials {
 	email: string;
@@ -7,82 +6,92 @@ interface LoginCredentials {
 }
 
 interface SignupCredentials extends LoginCredentials {
-  username: string;
-  biography?: string;
-}
-
-interface Response {
-  access_token: string;
+	username: string;
+	biography?: string;
 }
 
 const useAuth = () => {
-	const setToken = useAuthStore((state) => state.setToken);
-	const clearToken = useAuthStore((state) => state.clearToken);
+	const isAuthenticated = useQuery({
+		queryKey: ['isAuthenticated'],
+		queryFn: async () => {
+			const response = await fetch('http://localhost:8080/auth/', {
+				method: 'GET',
+				credentials: 'include',
+			});
 
-  const signupMutation = useMutation({
-    mutationFn: async (credentials: SignupCredentials) => {
-      const response = await fetch('http://localhost:8080/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
-      if (!response.ok) {
+			if (!response.ok) {
+				return false;
+			}
+
+			return true 
+		},
+	});
+
+	const signupMutation = useMutation({
+		mutationFn: async (credentials: SignupCredentials) => {
+			const response = await fetch(
+				'http://localhost:8080/auth/register',
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(credentials),
+				}
+			);
+
+			if (!response.ok) {
 				const errorData = await response.json();
 				throw new Error(errorData.message || 'Signup failed');
 			}
-      const token: Response = await response.json();
-			return token;
-		},
-		onSuccess: (token) => {
-			setToken(token.access_token);
-		},
 
-		onError: (error: Error) => {
-			clearToken();
-			return error.message;
+			return response.json();
 		},
-  });
+	});
 
 	const loginMutation = useMutation({
 		mutationFn: async (credentials: LoginCredentials) => {
-			const response = await fetch(`http://localhost:8080/auth/login`, {
+			const response = await fetch('http://localhost:8080/auth/login', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(credentials),
+				credentials: 'include',
 			});
+
 			if (!response.ok) {
 				const errorData = await response.json();
 				throw new Error(errorData.message || 'Login failed');
 			}
-			const token: Response = await response.json(); 
-			return token;
+			return response.json();
 		},
-
-		onSuccess: (token) => {
-			setToken(token.access_token);
+		onSuccess: () => {
+			isAuthenticated.refetch();
 		},
-
-		onError: (error) => {
-			clearToken();
-			return error.message;
-		},
-
 	});
 
-	const logout = () => {
-		clearToken();
+	const logout = async () => {
+		const response = await fetch('http://localhost:8080/auth/logout', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
+		});
+
+		if (!response.ok) {
+			throw new Error('Logout failed');
+		}
+
+		return response.json();
 	};
 
 	return {
+		isAuthenticated: isAuthenticated.data ?? false,
 		login: loginMutation.mutate,
 		logout,
 		loginError: loginMutation.isError,
 		loginErrorMessage: loginMutation.error?.message,
 		loginIsLoading: loginMutation.isPending,
-    signup: signupMutation.mutate,
-    signupError: signupMutation.isError,
+		signup: signupMutation.mutate,
+		signupError: signupMutation.isError,
 		signupErrorMessage: signupMutation.error?.message,
-    signupIsLoading: signupMutation.isPending
+		signupIsLoading: signupMutation.isPending,
 	};
 };
 
