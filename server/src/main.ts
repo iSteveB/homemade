@@ -4,14 +4,18 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true, // Supprimer les champs non définis dans le DTO
-    transform: true, // Convertir les champs en types appropriés
-  }));
+  app.use(cookieParser());
+  app.enableCors({ origin: 'http://localhost:3000', credentials: true });
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Supprimer les champs non définis dans le DTO
+      transform: true, // Convertir les champs en types appropriés
+    }),
+  );
 
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
@@ -25,7 +29,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 
-  app.enableCors();
   await app.listen(8080);
 }
 bootstrap();

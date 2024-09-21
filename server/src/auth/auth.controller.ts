@@ -1,4 +1,5 @@
-import { Controller, Request, Post, Get, UseGuards, Body } from '@nestjs/common';
+import { Controller, Request, Post, Get, UseGuards, Body, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -25,8 +26,17 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() request: LoginUserDto) {
-    return await this.authService.login(request.user);
+  async login(@Request() request: LoginUserDto, @Res({ passthrough: true }) response: Response) {
+    const tokenData = await this.authService.login(request.user);
+    response.cookie('token', tokenData.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      sameSite: 'strict',
+      path: '/',
+
+    });
+    return { message: 'Login successful' };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -36,7 +46,11 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Request() request: any) {
-    request.session.destroy();
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.cookie('token', '', {
+      httpOnly: true,
+      expires: new Date(0)
+    });
+    return { message: 'Déconnexion réussie' };
   }
 }
