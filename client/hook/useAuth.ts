@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 interface LoginCredentials {
 	email: string;
@@ -10,20 +11,29 @@ interface SignupCredentials extends LoginCredentials {
 	biography?: string;
 }
 
+export interface User {
+	id: string;
+	username: string;
+	name: string;
+	avatarUrl: string;
+	biography?: string;
+}
+
 const useAuth = () => {
-	const isAuthenticated = useQuery({
-		queryKey: ['isAuthenticated'],
+	const router = useRouter();
+
+	const userData = useQuery<User, Error>({
+		queryKey: ['user'],
 		queryFn: async () => {
 			const response = await fetch('http://localhost:8080/auth/', {
 				method: 'GET',
 				credentials: 'include',
 			});
-
 			if (!response.ok) {
-				return false;
+				router.push('/');
+				throw new Error('Not authenticated');
 			}
-
-			return true 
+			return await response.json();
 		},
 	});
 
@@ -47,7 +57,7 @@ const useAuth = () => {
 		},
 	});
 
-	const loginMutation = useMutation({
+	const loginMutation = useMutation<User, Error, LoginCredentials>({
 		mutationFn: async (credentials: LoginCredentials) => {
 			const response = await fetch('http://localhost:8080/auth/login', {
 				method: 'POST',
@@ -58,12 +68,14 @@ const useAuth = () => {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Login failed');
+				throw new Error(
+					errorData.message || 'Login failed'
+				);
 			}
-			return response.json();
+			return await response.json();
 		},
 		onSuccess: () => {
-			isAuthenticated.refetch();
+			router.push('/home');
 		},
 	});
 
@@ -78,11 +90,13 @@ const useAuth = () => {
 			throw new Error('Logout failed');
 		}
 
+		router.push('/');
+
 		return response.json();
 	};
 
 	return {
-		isAuthenticated: isAuthenticated.data ?? false,
+		userData: userData.data ?? [''],
 		login: loginMutation.mutate,
 		logout,
 		loginError: loginMutation.isError,

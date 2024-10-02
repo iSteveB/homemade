@@ -4,12 +4,12 @@ import { THEME_TYPES } from '@/constants';
 
 const { THEME_LIGHT, THEME_DARK } = THEME_TYPES;
 
-export type ThemeState = {
+export type ThemeStore = {
 	theme: string;
 	toggleTheme: () => void;
 };
 
-const useThemeStore = create<ThemeState>()(
+const useThemeStore = create<ThemeStore>()(
 	persist(
 		(set) => ({
 			theme: THEME_LIGHT,
