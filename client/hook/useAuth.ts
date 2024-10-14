@@ -16,13 +16,15 @@ export interface User {
 	username: string;
 	name: string;
 	avatarUrl: string;
-	biography?: string;
+	biography?: string; 
+	createdAt: string;
+	updatedAt: string;
 }
 
 const useAuth = () => {
 	const router = useRouter();
 
-	const userData = useQuery<User, Error>({
+	const userData = useQuery<User, Error >({
 		queryKey: ['user'],
 		queryFn: async () => {
 			const response = await fetch('http://localhost:8080/auth/', {
@@ -30,8 +32,10 @@ const useAuth = () => {
 				credentials: 'include',
 			});
 			if (!response.ok) {
-				router.push('/');
-				throw new Error('Not authenticated');
+				const errorData = await response.json();
+				throw new Error(
+					errorData.message || 'Login failed'
+				);
 			}
 			return await response.json();
 		},
@@ -96,7 +100,7 @@ const useAuth = () => {
 	};
 
 	return {
-		userData: userData.data ?? [''],
+		userData: userData.data,
 		login: loginMutation.mutate,
 		logout,
 		loginError: loginMutation.isError,
