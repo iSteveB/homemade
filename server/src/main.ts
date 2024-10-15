@@ -9,7 +9,7 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(cookieParser());
-  app.enableCors({ origin: 'http://localhost:3000', credentials: true });
+  app.enableCors({ origin: 'https://localhost:3000', credentials: true });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Supprimer les champs non définis dans le DTO

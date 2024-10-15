@@ -66,7 +66,7 @@ export default function LoginForm() {
 	};
 
 	return (
-		<Card className='w-full max-w-md mx-auto'>
+		<Card className='mx-auto w-full max-w-md bg-inherit dark:bg-inherit'>
 			<CardHeader>
 				<CardTitle>Connexion</CardTitle>
 				<CardDescription>Connectez-vous à votre compte</CardDescription>

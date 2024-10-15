@@ -78,10 +78,7 @@ export class AuthService {
       },
     });
 
-    return this.authenticateUser({
-      id: newUser.id,
-      email: newUser.email,
-    });
+    return newUser;
   }
 
   async login({ email, id }: { email: string; id: string }) {

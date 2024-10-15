@@ -21,6 +21,9 @@ export class CreateUserDto {
   @MinLength(3)
   username: string;
 
+  @IsNotEmpty()
+  name: string;
+
   biography?: string;
   avatarFileKey?: string;
 }

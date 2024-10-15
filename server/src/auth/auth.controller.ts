@@ -1,4 +1,12 @@
-import { Controller, Request, Post, Get, UseGuards, Body, Res } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  Post,
+  Get,
+  UseGuards,
+  Body,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -10,31 +18,52 @@ import { LoginUserDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userServices: UsersService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userServices: UsersService,
+  ) {}
 
   @Post('register')
-  async register(@Body() body: CreateUserDto) {
+  async register(
+    @Body() body: CreateUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     const { username, email, password, biography, avatarFileKey } = body;
-    return this.authService.createUser({
+    const newUser = await this.authService.createUser({
+      name: body.name,
       username,
       email,
       password,
       biography,
       avatarFileKey,
     });
+
+    const tokenData = await this.authService.login(newUser);
+
+    response.cookie('token', tokenData.access_token, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      sameSite: 'none',
+      path: '/',
+    });
+
+    return { message: 'Signup successful' };
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() request: LoginUserDto, @Res({ passthrough: true }) response: Response) {
+  async login(
+    @Request() request: LoginUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     const tokenData = await this.authService.login(request.user);
     response.cookie('token', tokenData.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      sameSite: 'strict',
+      sameSite: 'none',
       path: '/',
-
     });
     return { message: 'Login successful' };
   }
@@ -49,7 +78,10 @@ export class AuthController {
   async logout(@Res({ passthrough: true }) response: Response) {
     response.cookie('token', '', {
       httpOnly: true,
-      expires: new Date(0)
+      secure: true,
+      maxAge: 0,
+      sameSite: 'none',
+      path: '/',
     });
     return { message: 'Déconnexion réussie' };
   }

@@ -12,10 +12,13 @@ export function middleware(request: NextRequest) {
   if (!token && request.nextUrl.pathname.startsWith('/home')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
+  if (!token && request.nextUrl.pathname.startsWith('/profile')) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/', '/home/:path*'],
+  matcher: ['/', '/home/:path*', '/profile/:path*'],
 };

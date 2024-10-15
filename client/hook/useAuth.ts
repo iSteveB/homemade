@@ -16,7 +16,7 @@ export interface User {
 	username: string;
 	name: string;
 	avatarUrl: string;
-	biography?: string; 
+	biography?: string;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -24,7 +24,7 @@ export interface User {
 const useAuth = () => {
 	const router = useRouter();
 
-	const userData = useQuery<User, Error >({
+	const userData = useQuery<User, Error>({
 		queryKey: ['user'],
 		queryFn: async () => {
 			const response = await fetch('http://localhost:8080/auth/', {
@@ -33,9 +33,7 @@ const useAuth = () => {
 			});
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(
-					errorData.message || 'Login failed'
-				);
+				throw new Error(errorData.message || 'Login failed');
 			}
 			return await response.json();
 		},
@@ -49,6 +47,7 @@ const useAuth = () => {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(credentials),
+					credentials: 'include'
 				}
 			);
 
@@ -56,9 +55,11 @@ const useAuth = () => {
 				const errorData = await response.json();
 				throw new Error(errorData.message || 'Signup failed');
 			}
-
 			return response.json();
 		},
+		onSuccess: () => {
+			router.push('/home')
+		}
 	});
 
 	const loginMutation = useMutation<User, Error, LoginCredentials>({
@@ -72,9 +73,7 @@ const useAuth = () => {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(
-					errorData.message || 'Login failed'
-				);
+				throw new Error(errorData.message || 'Login failed');
 			}
 			return await response.json();
 		},

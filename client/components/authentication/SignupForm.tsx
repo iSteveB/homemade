@@ -13,8 +13,10 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import useAuth from '@/hook/useAuth';
+import { useRouter } from 'next/navigation';
 
 const signupSchema = z.object({
+	name: z.string().min(3, 'Le nom doit avoir au moins 2 caratères'),
 	username: z
 		.string()
 		.min(3, "Le nom d'utilisateur doit avoir au moins 3 caratères"),
@@ -27,9 +29,12 @@ const signupSchema = z.object({
 type SignupFormData = z.infer<typeof signupSchema>;
 
 const SignupForm = () => {
-	const { signup, signupError, signupErrorMessage, signupIsLoading } = useAuth();
+	const { signup, signupError, signupErrorMessage, signupIsLoading } =
+		useAuth();
+	const router = useRouter();
 
 	const [formData, setFormData] = useState<SignupFormData>({
+		name: '',
 		username: '',
 		email: '',
 		password: '',
@@ -65,20 +70,41 @@ const SignupForm = () => {
 		e.preventDefault();
 		if (validateForm()) {
 			signup(formData);
-			setFormData({ username: '', email: '', password: '' });
+			router.push('/home');
 		}
 	};
 
 	return (
-		<Card className='w-full max-w-md mx-auto'>
+		<Card className='mx-auto w-full max-w-md bg-inherit dark:bg-inherit'>
 			<CardHeader>
-				<CardTitle>S'inscrire</CardTitle>
+				<CardTitle>S&apos;inscrire</CardTitle>
 				<CardDescription>Créer un nouveau compte</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<form onSubmit={handleSubmit} className='space-y-4'>
+					<div>
+						<Label htmlFor='name'>Nom</Label>
+						<Input
+							id='name'
+							name='name'
+							type='text'
+							autoComplete='name'
+							value={formData.name}
+							onChange={handleChange}
+							placeholder='John'
+							aria-invalid={!!errors.name}
+							aria-describedby='name-error'
+						/>
+						{errors.name && (
+							<Alert variant='destructive'>
+								<AlertDescription id='name-error'>
+									{errors.name}
+								</AlertDescription>
+							</Alert>
+						)}
+					</div>
 					<div className='space-y-2'>
-						<Label htmlFor='username'>Nom d'utilisateur</Label>
+						<Label htmlFor='username'>Nom d&apos;utilisateur</Label>
 						<Input
 							id='username'
 							name='username'
@@ -150,7 +176,9 @@ const SignupForm = () => {
 			{signupError && (
 				<CardFooter>
 					<Alert variant='destructive'>
-						<AlertDescription>{signupErrorMessage || 'Une erreur est survenue'}</AlertDescription>
+						<AlertDescription>
+							{signupErrorMessage || 'Une erreur est survenue'}
+						</AlertDescription>
 					</Alert>
 				</CardFooter>
 			)}
