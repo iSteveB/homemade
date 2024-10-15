@@ -70,8 +70,22 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async authenticateUser(@Request() request: RequestWithUser) {
-    return await this.userServices.getUserById(request.user.id);
+  async authenticateUser(
+    @Request() request: RequestWithUser,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const user = await this.userServices.getUserById(request.user.id);
+    if (!user) {
+      response.cookie('token', '', {
+        httpOnly: true,
+        secure: true,
+        maxAge: 0,
+        sameSite: 'none',
+        path: '/',
+      });
+      throw new Error('User not Found');
+    }
+    return user;
   }
 
   @Post('logout')
