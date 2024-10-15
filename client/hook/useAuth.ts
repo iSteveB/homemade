@@ -1,25 +1,29 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { z } from 'zod';
 
-interface LoginCredentials {
-	email: string;
-	password: string;
-}
+const LoginCredentialsSchema = z.object({
+	email: z.string().email('Adresse email invalide'),
+	password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caract res'),
+});
 
-interface SignupCredentials extends LoginCredentials {
-	username: string;
-	biography?: string;
-}
+const SignupCredentialsSchema = LoginCredentialsSchema.extend({
+	username: z.string().min(3, 'Le nom d\'utilisateur doit contenir au moins 3 caract res'),
+	biography: z.string().optional(),
+});
 
-export interface User {
-	id: string;
-	username: string;
-	name: string;
-	avatarUrl: string;
-	biography?: string;
-	createdAt: string;
-	updatedAt: string;
-}
+
+export const UserSchema = z.object({
+	id: z.string().uuid(),
+	username: z.string().min(3, 'Le nom d\'utilisateur doit contenir au moins 3 caract res'),
+	name: z.string().min(3, 'Le nom doit contenir au moins 3 caract res'),
+	avatarUrl: z.string().url(),
+	biography: z.string().optional(),
+	createdAt: z.date(),
+	updatedAt: z.date(),
+});
+
+export type User = z.infer<typeof UserSchema>;
 
 const useAuth = () => {
 	const router = useRouter();
@@ -33,6 +37,7 @@ const useAuth = () => {
 			});
 			if (!response.ok) {
 				const errorData = await response.json();
+				router.push("/")
 				throw new Error(errorData.message || 'Login failed');
 			}
 			return await response.json();
@@ -40,7 +45,7 @@ const useAuth = () => {
 	});
 
 	const signupMutation = useMutation({
-		mutationFn: async (credentials: SignupCredentials) => {
+		mutationFn: async (credentials: z.infer<typeof SignupCredentialsSchema>) => {
 			const response = await fetch(
 				'http://localhost:8080/auth/register',
 				{
@@ -55,15 +60,13 @@ const useAuth = () => {
 				const errorData = await response.json();
 				throw new Error(errorData.message || 'Signup failed');
 			}
+			router.push('/home')
 			return response.json();
 		},
-		onSuccess: () => {
-			router.push('/home')
-		}
 	});
 
-	const loginMutation = useMutation<User, Error, LoginCredentials>({
-		mutationFn: async (credentials: LoginCredentials) => {
+	const loginMutation = useMutation<User, Error, z.infer<typeof LoginCredentialsSchema>>({
+		mutationFn: async (credentials: z.infer<typeof LoginCredentialsSchema>) => {
 			const response = await fetch('http://localhost:8080/auth/login', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
