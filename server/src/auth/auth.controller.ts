@@ -6,6 +6,7 @@ import {
   UseGuards,
   Body,
   Res,
+  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -49,6 +50,30 @@ export class AuthController {
     });
 
     return { message: 'Signup successful' };
+  }
+
+  @Post('reset-password')
+  async resetUserPassword(@Body('email') email: string) {
+    const response = await this.authService.resetUserPassword({ email });
+    return response;
+  }
+
+  @Get('verify-reset-password-token')
+  async verifyResetPasswordToken(@Query('token') token: string) {
+    const response = await this.authService.verifyResetPasswordToken({ token });
+    return response;
+  }
+
+  @Post('update-password')
+  async updatePassword(
+    @Body('token') token: string,
+    @Body('password') password: string,
+  ) {
+    await this.authService.updatePassword({
+      token,
+      password,
+    });
+    return { message: 'Votre mot de passe a été mis à jour avec succès.' };
   }
 
   @UseGuards(LocalAuthGuard)

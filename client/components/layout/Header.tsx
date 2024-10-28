@@ -17,7 +17,7 @@ import Image from 'next/image';
 // import { Switch } from '@/components/ui/switch'
 import { useTheme } from '@/hook/useTheme';
 import useThemeStore from '@/lib/store/useThemeStore';
-import useAuth from '@/hook/useAuth';
+import useAuth from '@/hook/auth/useAuth';
 
 // Mock notifications data
 const notifications = [
@@ -28,7 +28,8 @@ const notifications = [
 ];
 
 export default function Header() {
-	const { userData, logout } = useAuth();
+	const { userData, userDataPending, userDataError, logout } = useAuth();
+
 	const toggleTheme = useThemeStore((state) => state.toggleTheme);
 	useTheme();
 
@@ -39,6 +40,15 @@ export default function Header() {
 			console.error('Error logging out:', error);
 		}
 	};
+
+	if (userDataPending) {
+		return <p>Loading...</p>;
+	}
+
+	if (userDataError) {
+		handleLogout();
+		return null;
+	}
 
 	return (
 		<header className='border-b border-neutral dark:border-dark-neutral'>
@@ -94,7 +104,7 @@ export default function Header() {
 
 					{/* Profile Button */}
 					<Link
-						href='/profile'
+						href={`/profile/${userData?.username}`}
 						className='overflow-hidden rounded-lg'
 						aria-label='Go to profile'>
 						<Image

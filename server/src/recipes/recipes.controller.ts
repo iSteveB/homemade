@@ -17,7 +17,6 @@ export class RecipesController {
 
   @Post()
   create(@Body() createRecipeDto: Prisma.RecipeCreateInput) {
-    console.log(createRecipeDto);
     return this.recipesService.create(createRecipeDto);
   }
 

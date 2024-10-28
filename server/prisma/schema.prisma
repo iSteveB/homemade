@@ -20,21 +20,23 @@ enum Cost {
 }
 
 model User {
-  id            String           @id @default(uuid())
-  isAdmin       Boolean          @default(false)
-  name          String           @db.VarChar(30)
-  username      String           @unique @db.VarChar(16)
-  email         String           @unique @db.VarChar(100)
-  password      String
-  biography     String?          @db.VarChar(500)
-  avatarFileKey String?          @unique
-  recipes       Recipe[]
-  favorites     FavoriteRecipe[]
-  following     UserFollowing[]
-  followers     UserFollowers[]
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  Comment       Comment[]
+  id                  String           @id @default(uuid())
+  isAdmin             Boolean          @default(false)
+  name                String           @db.VarChar(30)
+  username            String           @unique @db.VarChar(16)
+  email               String           @unique @db.VarChar(100)
+  password            String
+  isResettingPassword Boolean          @default(false)
+  resetPasswordToken  String?          @unique
+  biography           String?          @db.VarChar(500)
+  avatarFileKey       String?          @unique
+  recipes             Recipe[]
+  favorites           FavoriteRecipe[]
+  following           UserFollowing[]
+  followers           UserFollowers[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  Comment             Comment[]
 
   @@index([username, email])
 }

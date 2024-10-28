@@ -10,15 +10,15 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
-				primary: '#53795A',
-				secondary: '#333135',
-				accent: '#F5B651',
-				background: '#F9F5F1',
+				primary: '#53795A', // green
+				secondary: '#333135', // dark
+				accent: '#F5B651', // yellow
+				neutral: '#F9F5F1', // light
 				dark: {
-					primary: '#333135',
-					secondary: '#53795A',
-					accent: '#F5B651',
-					background: '#1A1A1A',
+					primary: '#333135', // dark
+					secondary: '#53795A', // green
+					accent: '#F5B651', // yellow
+					neutral: '#1A1A1A', // black
 				},
 			},
 		},

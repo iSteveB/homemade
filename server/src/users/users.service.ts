@@ -24,6 +24,12 @@ export class UsersService {
     return await this.databaseService.user.findUnique({ where: { email } });
   }
 
+  async getUserByResetPasswordToken(token: string): Promise<User | undefined> {
+    return await this.databaseService.user.findUnique({
+      where: { resetPasswordToken: token },
+    });
+  }
+
   async updateUser(id: string, updateUserDto: Prisma.UserUpdateInput) {
     return await this.databaseService.user.update({
       where: { id },

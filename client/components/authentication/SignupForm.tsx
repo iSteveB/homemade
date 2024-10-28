@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -12,24 +14,35 @@ import {
 	CardFooter,
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import useAuth from '@/hook/useAuth';
+import { CheckCircle2 } from 'lucide-react';
+import useAuth from '@/hook/auth/useAuth';
 import { useRouter } from 'next/navigation';
 
-const signupSchema = z.object({
-	name: z.string().min(3, 'Le nom doit avoir au moins 2 caratères'),
-	username: z
-		.string()
-		.min(3, "Le nom d'utilisateur doit avoir au moins 3 caratères"),
-	email: z.string().email('Addresse email invalide'),
-	password: z
-		.string()
-		.min(8, 'Le mot de passe doit avoir au moins 8 caratères'),
-});
+const signupSchema = z
+	.object({
+		name: z
+			.string()
+			.min(3, 'Le nom doit avoir au moins 2 caratères')
+			.toLowerCase(),
+		username: z
+			.string()
+			.min(3, "Le nom d'utilisateur doit avoir au moins 3 caratères")
+			.toLowerCase(),
+		email: z.string().email('Addresse email invalide').toLowerCase(),
+		password: z
+			.string()
+			.min(8, 'Le mot de passe doit avoir au moins 8 caratères'),
+		confirmPassword: z.string(),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		message: 'Les mots de passe ne correspondent pas',
+		path: ['confirmPassword'],
+	});
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
 const SignupForm = () => {
-	const { signup, signupError, signupErrorMessage, signupIsLoading } =
+	const { signup, signupIsError, signupErrorMessage, signupIsLoading } =
 		useAuth();
 	const router = useRouter();
 
@@ -38,6 +51,7 @@ const SignupForm = () => {
 		username: '',
 		email: '',
 		password: '',
+		confirmPassword: '',
 	});
 	const [errors, setErrors] = useState<Partial<SignupFormData>>({});
 
@@ -74,8 +88,12 @@ const SignupForm = () => {
 		}
 	};
 
+	const passwordsMatch =
+		formData.password === formData.confirmPassword &&
+		formData.password !== '';
+
 	return (
-		<Card className='mx-auto w-full max-w-md bg-inherit dark:bg-inherit'>
+		<Card className='mx-auto w-full max-w-md'>
 			<CardHeader>
 				<CardTitle>S&apos;inscrire</CardTitle>
 				<CardDescription>Créer un nouveau compte</CardDescription>
@@ -151,7 +169,7 @@ const SignupForm = () => {
 							name='password'
 							type='password'
 							placeholder='8 caractères minimum'
-							autoComplete='current-password'
+							autoComplete='new-password'
 							value={formData.password}
 							onChange={handleChange}
 							aria-invalid={!!errors.password}
@@ -165,6 +183,34 @@ const SignupForm = () => {
 							</Alert>
 						)}
 					</div>
+					<div className='space-y-2'>
+						<Label htmlFor='confirmPassword'>
+							Confirmer le mot de passe
+						</Label>
+						<div className='relative'>
+							<Input
+								id='confirmPassword'
+								name='confirmPassword'
+								type='password'
+								placeholder='Confirmer le mot de passe'
+								autoComplete='new-password'
+								value={formData.confirmPassword}
+								onChange={handleChange}
+								aria-invalid={!!errors.confirmPassword}
+								aria-describedby='confirmPassword-error'
+							/>
+							{passwordsMatch && (
+								<CheckCircle2 className='absolute right-3 top-1/2 size-5 -translate-y-1/2 text-primary' />
+							)}
+						</div>
+						{errors.confirmPassword && (
+							<Alert variant='destructive'>
+								<AlertDescription id='confirmPassword-error'>
+									{errors.confirmPassword}
+								</AlertDescription>
+							</Alert>
+						)}
+					</div>
 					<Button
 						type='submit'
 						className='w-full'
@@ -173,7 +219,7 @@ const SignupForm = () => {
 					</Button>
 				</form>
 			</CardContent>
-			{signupError && (
+			{signupIsError && (
 				<CardFooter>
 					<Alert variant='destructive'>
 						<AlertDescription>

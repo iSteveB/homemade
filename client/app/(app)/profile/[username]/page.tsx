@@ -7,14 +7,17 @@ import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
-import useAuth from '@/hook/useAuth';
 import PostsTab from './components/PostsTab';
 import LikesTab from './components/LikesTab';
 import CommentsTab from './components/CommentsTab';
+import { getInitials } from '@/lib/utils';
+import useUserData from '@/hook/auth/useUserData';
 
 const ProfilPage = () => {
 	const [activeTab, setActiveTab] = useState('posts');
-	const { userData } = useAuth();
+	const { userData } = useUserData();
+
+	if (!userData) return null;
 
 	return (
 		<main className='mt-6 flex flex-col gap-4'>
@@ -36,7 +39,9 @@ const ProfilPage = () => {
 							src='https://i.pravatar.cc/600'
 							alt='Profile picture'
 						/>
-						<AvatarFallback>JD</AvatarFallback>
+						<AvatarFallback>
+							{getInitials(userData?.username)}
+						</AvatarFallback>
 					</Avatar>
 					<div className='mt-4 flex items-center justify-between'>
 						{/* User Info */}
@@ -62,17 +67,21 @@ const ProfilPage = () => {
 								<p className='text-sm'>Posts</p>
 							</div>
 						</div>
-						<Button variant='default' className='flex gap-2'>
+						<Button variant='ghost' className='flex gap-2'>
 							<Pencil className='size-4' />
 							<span>Edit</span>
 						</Button>
 					</div>
 					{/* Biography */}
-						{userData?.biography ?
-					<p className='mt-4 text-left text-sm'>
+					{userData?.biography ? (
+						<p className='mt-4 text-left text-sm'>
 							{userData?.biography}
-					</p>
-							: <p className='mt-4 text-left text-sm text-neutral/50'>Add a biography.</p>}
+						</p>
+					) : (
+						<p className='mt-4 text-left text-sm text-secondary/20 dark:text-neutral/50'>
+							Add a biography.
+						</p>
+					)}
 				</CardContent>
 			</Card>
 

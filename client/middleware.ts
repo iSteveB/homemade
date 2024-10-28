@@ -10,15 +10,15 @@ export function middleware(request: NextRequest) {
   }
 
   if (!token && request.nextUrl.pathname.startsWith('/home')) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
   if (!token && request.nextUrl.pathname.startsWith('/profile')) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/', '/home/:path*', '/profile/:path*'],
+  matcher: ['/','/login', '/home/:path*', '/profile/:path*'],
 };

@@ -12,10 +12,11 @@ import {
 	CardFooter,
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import useAuth from '@/hook/useAuth';
+import useAuth from '@/hook/auth/useAuth';
+import Link from 'next/link';
 
 const loginSchema = z.object({
-	email: z.string().email('Adresse email invalide'),
+	email: z.string().email('Adresse email invalide').toLowerCase(),
 	password: z
 		.string()
 		.min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
@@ -23,8 +24,8 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function LoginForm() {
-	const { login, loginError, loginErrorMessage, loginIsLoading } = useAuth();
+const LoginForm = () => {
+	const { login, loginIsError, loginErrorMessage, loginIsLoading } = useAuth();
 
 	const [formData, setFormData] = useState<LoginFormData>({
 		email: '',
@@ -66,7 +67,7 @@ export default function LoginForm() {
 	};
 
 	return (
-		<Card className='mx-auto w-full max-w-md bg-inherit dark:bg-inherit'>
+		<Card className='mx-auto w-full max-w-md'>
 			<CardHeader>
 				<CardTitle>Connexion</CardTitle>
 				<CardDescription>Connectez-vous à votre compte</CardDescription>
@@ -79,7 +80,7 @@ export default function LoginForm() {
 							id='email'
 							name='email'
 							type='email'
-              autoComplete='email'
+							autoComplete='email'
 							value={formData.email}
 							onChange={handleChange}
 							aria-invalid={!!errors.email}
@@ -99,12 +100,17 @@ export default function LoginForm() {
 							id='password'
 							name='password'
 							type='password'
-              autoComplete='current-password'
+							autoComplete='current-password'
 							value={formData.password}
 							onChange={handleChange}
 							aria-invalid={!!errors.password}
 							aria-describedby='password-error'
 						/>
+						<Link
+							href='/reset-password'
+							className='text-xs underline'>
+							Mot de passe oublié ?
+						</Link>
 						{errors.password && (
 							<Alert variant='destructive'>
 								<AlertDescription id='password-error'>
@@ -123,7 +129,7 @@ export default function LoginForm() {
 					</Button>
 				</form>
 			</CardContent>
-			{loginError && (
+			{loginIsError && (
 				<CardFooter>
 					<Alert variant='destructive'>
 						<AlertDescription>{loginErrorMessage}</AlertDescription>
@@ -132,4 +138,6 @@ export default function LoginForm() {
 			)}
 		</Card>
 	);
-}
+};
+
+export default LoginForm;

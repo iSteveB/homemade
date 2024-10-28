@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -9,6 +10,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UserPayload } from './jwt.strategy';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { MailerService } from '../mailer/mailer.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +19,7 @@ export class AuthService {
     private readonly databaseService: DatabaseService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -33,6 +37,7 @@ export class AuthService {
     if (!isPasswordMatching) {
       throw new UnauthorizedException('Email ou mot de passe incorrect!');
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...existingUser } = user;
     return existingUser;
   }
@@ -78,10 +83,114 @@ export class AuthService {
       },
     });
 
+    await this.mailerService.sendCreateAccountEmail({
+      firstName: data.name,
+      recipient: data.email,
+    });
+
     return newUser;
   }
 
   async login({ email, id }: { email: string; id: string }) {
     return await this.authenticateUser({ email, id });
+  }
+
+  async resetUserPassword({ email }: { email: string }) {
+    const existingUser = await this.usersService.getUserByEmail(email);
+    const resetPasswordToken = uuidv4();
+
+    if (!existingUser) {
+      throw new UnauthorizedException("L'utilisateur n'existe pas.");
+    }
+
+    if (existingUser.isResettingPassword === true) {
+      throw new UnauthorizedException(
+        'Le mot de passe est déjà en cours de réinitalisation.',
+      );
+    }
+
+    try {
+      await this.mailerService.sendResetPasswordEmail({
+        recipient: existingUser.email,
+        firstName: existingUser.name,
+        token: resetPasswordToken,
+      });
+
+      await this.databaseService.user.update({
+        where: { email },
+        data: {
+          isResettingPassword: true,
+          resetPasswordToken,
+        },
+      });
+
+      return {
+        error: false,
+        message:
+          'Un email de réinitialisation de mot de passe vous a été envoyé.',
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Une erreur est survenue lors de la réinitialisation du mot de passe.',
+      );
+    }
+  }
+
+  async verifyResetPasswordToken({ token }: { token: string }) {
+    const existingUser =
+      await this.usersService.getUserByResetPasswordToken(token);
+
+    if (!existingUser) {
+      return {
+        error: true,
+        message: 'Token invalide.',
+      };
+    }
+
+    if (existingUser.isResettingPassword === false) {
+      return {
+        error: true,
+        message:
+          'Aucun changement de mot de passe n’a été demandé pour cet utilisateur.',
+      };
+    }
+    return {
+      error: false,
+      message: 'Token valide.',
+    };
+  }
+
+  async updatePassword({
+    token,
+    password,
+  }: {
+    token: string;
+    password: string;
+  }) {
+    const existingUser =
+      await this.usersService.getUserByResetPasswordToken(token);
+
+    if (!existingUser) {
+      throw new UnauthorizedException('Token invalide.');
+    }
+
+    if (existingUser.isResettingPassword === false) {
+      return {
+        error: true,
+        message:
+          'Aucun changement de mot de passe n’a été demandé pour cet utilisateur.',
+      };
+    }
+
+    const hashedPassword = await this.hashPassword(password);
+
+    await this.databaseService.user.update({
+      where: { email: existingUser.email },
+      data: {
+        password: hashedPassword,
+        isResettingPassword: false,
+        resetPasswordToken: null,
+      },
+    });
   }
 }

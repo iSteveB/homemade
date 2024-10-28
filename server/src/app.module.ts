@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { UploadModule } from './upload/upload.module';
 import { AwsService } from './aws/aws.service';
 import { ConfigModule } from '@nestjs/config';
+import { MailerService } from './mailer/mailer.service';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { ConfigModule } from '@nestjs/config';
     AppService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     AwsService,
+    MailerService,
   ],
 })
 export class AppModule {}

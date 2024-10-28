@@ -9,6 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { DatabaseModule } from 'src/database/database.module';
 import { DatabaseService } from 'src/database/database.service';
 import { UsersService } from 'src/users/users.service';
+import { MailerService } from 'src/mailer/mailer.service';
 
 @Module({
   imports: [
@@ -17,11 +18,18 @@ import { UsersService } from 'src/users/users.service';
     PassportModule,
     JwtModule.register({
       global: true,
-      secret:  process.env.JWT_SECRET,
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '30d' },
     }),
   ],
-  providers: [AuthService, UsersService, DatabaseService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    UsersService,
+    DatabaseService,
+    LocalStrategy,
+    JwtStrategy,
+    MailerService,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
