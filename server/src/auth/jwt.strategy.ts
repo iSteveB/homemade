@@ -1,15 +1,14 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
 
 export type UserPayload = { id: string; email: string };
-export type RequestWithUser = {
-  user: UserPayload;
-};
+export type RequestWithUser = Request & { user: UserPayload };
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request) => {
@@ -22,8 +21,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate({ email, id }: UserPayload) {
-    const user = { email, id };
-    return user;
+  async validate({ id }: UserPayload) {
+    const user = await this.usersService.getUserById(id);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...safeUser } = user;
+    return safeUser;
   }
 }

@@ -25,6 +25,7 @@ export const UserSchema = z.object({
 		.min(3, "Le nom d'utilisateur doit contenir au moins 3 caract res"),
 	name: z.string().min(3, 'Le nom doit contenir au moins 3 caract res'),
 	avatarUrl: z.string().url(),
+	bannerUrl: z.string().url(),
 	biography: z.string().optional(),
 	createdAt: z.date(),
 	updatedAt: z.date(),

@@ -13,7 +13,7 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('upload')
 export class UploadController {

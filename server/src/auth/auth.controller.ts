@@ -7,15 +7,15 @@ import {
   Body,
   Res,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './local-auth.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { LocalAuthGuard } from '../common/guards/local-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RequestWithUser } from './jwt.strategy';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { LoginUserDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -79,7 +79,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
-    @Request() request: LoginUserDto,
+    @Request() request: RequestWithUser,
     @Res({ passthrough: true }) response: Response,
   ) {
     const tokenData = await this.authService.login(request.user);
@@ -108,7 +108,7 @@ export class AuthController {
         sameSite: 'none',
         path: '/',
       });
-      throw new Error('User not Found');
+      throw new NotFoundException('User not Found');
     }
     return user;
   }

@@ -1,5 +1,5 @@
-import TrendingCard from './TrendingCard';
-import type { TrendingCategory } from './TrendingCard';
+import TrendingCard from './components/TrendingCard';
+import type { TrendingCategory } from './components/TrendingCard';
 
 const Trend = () => {
 	const trendingCategories: TrendingCategory[] = [

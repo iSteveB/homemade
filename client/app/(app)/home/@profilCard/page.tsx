@@ -15,7 +15,7 @@ export default function ProfileCard() {
 			{/* Banner */}
 			<div className='relative h-20'>
 				<Image
-					src='https://picsum.photos/400/120'
+					src={userData.bannerUrl ? userData.bannerUrl :'https://picsum.photos/400/120'}
 					alt='Profile banner'
 					width={400}
 					height={120}
@@ -27,7 +27,7 @@ export default function ProfileCard() {
 				{/* Profile Picture */}
 				<Avatar className='absolute left-1/2 top-0 size-32 -translate-x-1/2 -translate-y-1/2 border-4'>
 					<AvatarImage
-						src='https://i.pravatar.cc/300'
+						src={userData.avatarUrl ? userData.avatarUrl : 'https://i.pravatar.cc/300'}
 						alt='Profile picture'
 					/>
 					<AvatarFallback>
@@ -37,7 +37,7 @@ export default function ProfileCard() {
 
 				{/* User Info */}
 				<div className='mt-2 text-center'>
-					<h2 className='text-2xl font-bold'>{userData.username}</h2>
+					<h2 className='text-2xl font-bold'>{userData.name}</h2>
 					<p>@{userData.username}</p>
 				</div>
 

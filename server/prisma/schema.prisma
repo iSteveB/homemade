@@ -4,7 +4,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 enum Difficulty {
@@ -30,6 +31,7 @@ model User {
   resetPasswordToken  String?          @unique
   biography           String?          @db.VarChar(500)
   avatarFileKey       String?          @unique
+  bannerFileKey       String?          @unique
   recipes             Recipe[]
   favorites           FavoriteRecipe[]
   following           UserFollowing[]
@@ -46,9 +48,9 @@ model Recipe {
   user           User                 @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId         String
   title          String               @db.VarChar(150)
-  content        String
   description    String?              @db.VarChar(500)
   slug           String               @unique
+  servings       Int                  @default(1) @db.SmallInt
   difficulty     Difficulty?
   cost           Cost?
   duration       DurationRecipes[]
@@ -94,7 +96,7 @@ model DurationRecipes {
 
 model Tag {
   id          String        @id @default(uuid())
-  name        String
+  name        String        @unique
   RecipesTags RecipesTags[]
 }
 
@@ -126,7 +128,7 @@ model PicturesRecipes {
 
 model Category {
   id              String            @id @default(uuid())
-  name            String
+  name            String            @unique
   CategoryRecipes CategoryRecipes[]
 }
 
@@ -141,13 +143,15 @@ model CategoryRecipes {
 
 model Ingredient {
   id                 String               @id @default(uuid())
-  name               String
+  name               String               @unique
   IngredientsRecipes IngredientsRecipes[]
 }
 
 model IngredientsRecipes {
   recipeId     String
   ingredientId String
+  quantity     Int        @default(0) @db.SmallInt
+  unit         String     @default("g") @db.VarChar(10)
   recipe       Recipe     @relation(fields: [recipeId], references: [id])
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
 
@@ -156,7 +160,7 @@ model IngredientsRecipes {
 
 model Ustensil {
   id               String             @id @default(uuid())
-  name             String
+  name             String             @unique
   RecipesUstensils RecipesUstensils[]
 }
 

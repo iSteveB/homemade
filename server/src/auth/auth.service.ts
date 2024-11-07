@@ -62,7 +62,8 @@ export class AuthService {
   }
 
   async createUser(data: CreateUserDto) {
-    const isEmailExisting = await this.usersService.getUserByEmail(data.email);
+    const email = data.email.toLowerCase();
+    const isEmailExisting = await this.usersService.getUserByEmail(email);
     if (isEmailExisting) {
       throw new ConflictException('Cette adresse email est déjà utilisée.');
     }
@@ -79,24 +80,29 @@ export class AuthService {
     const newUser = await this.databaseService.user.create({
       data: {
         ...data,
+        email,
         password: hashedPassword,
       },
     });
 
     await this.mailerService.sendCreateAccountEmail({
       firstName: data.name,
-      recipient: data.email,
+      recipient: email,
     });
 
-    return newUser;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...user } = newUser;
+    return user;
   }
 
   async login({ email, id }: { email: string; id: string }) {
-    return await this.authenticateUser({ email, id });
+    return await this.authenticateUser({ email: email.toLowerCase(), id });
   }
 
   async resetUserPassword({ email }: { email: string }) {
-    const existingUser = await this.usersService.getUserByEmail(email);
+    const existingUser = await this.usersService.getUserByEmail(
+      email.toLowerCase(),
+    );
     const resetPasswordToken = uuidv4();
 
     if (!existingUser) {

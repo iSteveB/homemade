@@ -10,17 +10,27 @@ export class UsersService {
     return await this.databaseService.user.findMany();
   }
 
-  async getUserById(id: string): Promise<User | undefined> {
+  async getUserById(id: string): Promise<Partial<User> | undefined> {
     return await this.databaseService.user.findUnique({
       where: { id },
     });
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return await this.databaseService.user.findUnique({ where: { username } });
+  async getUserByUsername(
+    username: string,
+  ): Promise<Partial<User> | undefined> {
+    return await this.databaseService.user.findUnique({
+      where: { username },
+      omit: {
+        isAdmin: true,
+        resetPasswordToken: true,
+        isResettingPassword: true,
+        password: true,
+      },
+    });
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
+  async getUserByEmail(email: string): Promise<Partial<User> | undefined> {
     return await this.databaseService.user.findUnique({ where: { email } });
   }
 
