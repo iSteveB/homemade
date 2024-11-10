@@ -1,15 +1,6 @@
-import {
-  IsBoolean,
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-export class UserDto {
-  @IsString()
-  id: string;
-
+export class SafeUserDto {
   @IsString()
   name: string;
 
@@ -27,13 +18,7 @@ export class UserDto {
   @IsString()
   updatedAt: Date;
 
-  @IsBoolean()
-  isAdmin: boolean;
-
   @IsString()
   @MaxLength(500)
   biography: string;
-
-  @IsString()
-  avatarFileKey: string;
 }

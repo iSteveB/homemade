@@ -1,37 +1,34 @@
 'use client';
-import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import useAuth from '@/hook/auth/useAuth';
 import React from 'react';
-import { getInitials } from '@/lib/utils';
 
 export default function ProfileCard() {
 	const { userData } = useAuth();
-
+	const pictureEndpoint = `http://localhost:8080/users/${userData?.username}`;
 	if (!userData) return null;
 	return (
 		<Card className='mx-auto w-full max-w-md overflow-hidden'>
 			{/* Banner */}
 			<div className='relative h-20'>
-				<Image
-					src={userData.bannerUrl ? userData.bannerUrl :'https://picsum.photos/400/120'}
-					alt='Profile banner'
-					width={400}
-					height={120}
-					className='object-cover'
-				/>
+				<picture>
+					<img
+						src={pictureEndpoint + '/banner'}
+						alt='Profile banner'
+						width={400}
+						height={120}
+						className='object-cover'
+					/>
+				</picture>
 			</div>
 
 			<CardContent className='relative px-6 pb-8 pt-16'>
 				{/* Profile Picture */}
 				<Avatar className='absolute left-1/2 top-0 size-32 -translate-x-1/2 -translate-y-1/2 border-4'>
-					<AvatarImage
-						src={userData.avatarUrl ? userData.avatarUrl : 'https://i.pravatar.cc/300'}
-						alt='Profile picture'
-					/>
+					<AvatarImage src={pictureEndpoint + '/avatar'} alt={`Profile picture of ${userData.username}`} />
 					<AvatarFallback>
-						{getInitials(userData.username)}
+						{userData.username}
 					</AvatarFallback>
 				</Avatar>
 

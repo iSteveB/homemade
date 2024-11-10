@@ -1,19 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
+import { AwsS3Service } from 'src/aws/awsS3.service';
 import { DatabaseService } from 'src/database/database.service';
+import { SafeUserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly awsS3Service: AwsS3Service,
+  ) {}
 
   async getUsers() {
     return await this.databaseService.user.findMany();
   }
 
-  async getUserById(id: string): Promise<Partial<User> | undefined> {
-    return await this.databaseService.user.findUnique({
+  async getUserById(id: string): Promise<SafeUserDto> {
+    const user = await this.databaseService.user.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        biography: true,
+        createdAt: true,
+        updatedAt: true,
+        avatarFileKey: true,
+        bannerFileKey: true,
+      },
     });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _, avatarFileKey, bannerFileKey, ...safeUser } = user;
+    return { ...safeUser };
   }
 
   async getUserByUsername(
@@ -40,17 +63,48 @@ export class UsersService {
     });
   }
 
-  async updateUser(id: string, updateUserDto: Prisma.UserUpdateInput) {
+  async updateUser(
+    id: string,
+    updateUserDto: Prisma.UserUpdateInput,
+    submittedFile?: Express.Multer.File,
+    fileType?: 'avatar' | 'banner',
+  ) {
+    const existingUser = await this.databaseService.user.findUnique({
+      where: { id },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    const dataToUpdate = {
+      ...updateUserDto,
+      updatedAt: new Date(),
+    };
+
+    if (submittedFile && fileType) {
+      const fileKey = await this.awsS3Service.uploadFile(submittedFile, {
+        userId: id,
+        fileType,
+      });
+
+      if (fileType === 'avatar') {
+        dataToUpdate.avatarFileKey = fileKey;
+      } else if (fileType === 'banner') {
+        dataToUpdate.bannerFileKey = fileKey;
+      }
+    }
+
     return await this.databaseService.user.update({
       where: { id },
       data: {
-        ...updateUserDto,
-        updatedAt: new Date(),
+        ...dataToUpdate,
       },
     });
   }
 
   async delete(id: string) {
+    await this.awsS3Service.deleteFilesByUserId(id);
     return await this.databaseService.user.delete({ where: { id } });
   }
 }

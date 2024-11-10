@@ -14,14 +14,14 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from '../common/guards/local-auth.guard';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RequestWithUser } from './jwt.strategy';
-import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userServices: UsersService,
+    private readonly databaseService: DatabaseService,
   ) {}
 
   @Post('register')
@@ -99,7 +99,9 @@ export class AuthController {
     @Request() request: RequestWithUser,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const user = await this.userServices.getUserById(request.user.id);
+    const user = await this.databaseService.user.findUnique({
+      where: { id: request.user.id },
+    });
     if (!user) {
       response.cookie('token', '', {
         httpOnly: true,

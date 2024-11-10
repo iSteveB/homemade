@@ -9,8 +9,7 @@ import { CommentsModule } from './comments/comments.module';
 import { TagsModule } from './tags/tags.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { UploadModule } from './upload/upload.module';
-import { AwsService } from './aws/aws.service';
+import { AwsS3Service } from './aws/awsS3.service';
 import { ConfigModule } from '@nestjs/config';
 import { MailerService } from './mailer/mailer.service';
 
@@ -39,13 +38,12 @@ import { MailerService } from './mailer/mailer.service';
     TagsModule,
     AuthModule,
     UsersModule,
-    UploadModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
-    AwsService,
+    AwsS3Service,
     MailerService,
   ],
 })

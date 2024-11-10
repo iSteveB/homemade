@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Query, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CommentsService } from './comments.service';
 
@@ -22,7 +31,10 @@ export class CommentsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: Prisma.CommentUpdateInput) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCommentDto: Prisma.CommentUpdateInput,
+  ) {
     return this.commentsService.update(id, updateCommentDto);
   }
 

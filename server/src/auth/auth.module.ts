@@ -10,6 +10,7 @@ import { DatabaseModule } from 'src/database/database.module';
 import { DatabaseService } from 'src/database/database.service';
 import { UsersService } from 'src/users/users.service';
 import { MailerService } from 'src/mailer/mailer.service';
+import { AwsS3Service } from 'src/aws/awsS3.service';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MailerService } from 'src/mailer/mailer.service';
     LocalStrategy,
     JwtStrategy,
     MailerService,
+    AwsS3Service,
   ],
   controllers: [AuthController],
 })

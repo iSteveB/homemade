@@ -4,43 +4,44 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import React from 'react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
 import PostsTab from './components/PostsTab';
 import LikesTab from './components/LikesTab';
 import CommentsTab from './components/CommentsTab';
-import { getInitials } from '@/lib/utils';
 import useUserData from '@/hook/auth/useUserData';
 
 const ProfilPage = () => {
 	const [activeTab, setActiveTab] = useState('posts');
 	const { userData } = useUserData();
-
+	const pictureEndPoint = `http://localhost:8080/users/${userData?.username}`;
 	if (!userData) return null;
 
 	return (
 		<main className='mt-6 flex flex-col gap-4'>
 			<Card className='mx-auto w-full max-w-5xl overflow-hidden'>
 				{/* Banner */}
-				<div className='relative h-40'>
-					<Image
-						src='https://picsum.photos/1500/500'
-						alt={`Profile banner for ${userData?.username}`}
-						fill
-						className='object-cover'
-					/>
+				<div className='relative h-40 overflow-hidden'>
+					<picture>
+						<img
+							src={pictureEndPoint + '/banner'}
+							alt='Profile banner'
+							width={1500}
+							height={500}
+							className='object-cover'
+						/>
+					</picture>
 				</div>
 
 				<CardContent className='relative pb-8 pl-64'>
 					{/* Profile Picture */}
 					<Avatar className='absolute left-32 top-0 size-52 -translate-x-1/2 -translate-y-1/2 border-4 dark:border-dark-neutral'>
 						<AvatarImage
-							src='https://i.pravatar.cc/600'
-							alt='Profile picture'
+							src={pictureEndPoint + '/avatar'}
+							alt={`Profile picture of ${userData.username}`}
 						/>
 						<AvatarFallback>
-							{getInitials(userData?.username)}
+							{userData.username}
 						</AvatarFallback>
 					</Avatar>
 					<div className='mt-4 flex items-center justify-between'>

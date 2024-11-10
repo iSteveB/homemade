@@ -1,14 +1,14 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { DatabaseService } from 'src/database/database.service';
 
 export type UserPayload = { id: string; email: string };
 export type RequestWithUser = Request & { user: UserPayload };
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly usersService: UsersService) {
+  constructor(private readonly databaseService: DatabaseService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request) => {
@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate({ id }: UserPayload) {
-    const user = await this.usersService.getUserById(id);
+    const user = await this.databaseService.user.findUnique({ where: { id } });
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
