@@ -9,7 +9,7 @@ import { Pencil } from 'lucide-react';
 import PostsTab from './components/PostsTab';
 import LikesTab from './components/LikesTab';
 import CommentsTab from './components/CommentsTab';
-import useUserData from '@/hook/auth/useUserData';
+import useUserData from '@/hook/user/useUserData';
 
 const ProfilPage = () => {
 	const [activeTab, setActiveTab] = useState('posts');

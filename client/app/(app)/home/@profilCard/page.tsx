@@ -1,36 +1,32 @@
 'use client';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import useAuth from '@/hook/auth/useAuth';
+import useUserData from '@/hook/user/useUserData';
 import React from 'react';
+import Banner from '@/components/Banner';
+import UserAvatar from '@/components/UserAvatar';
+import { getPictureEndpoint } from '@/lib/utils';
 
 export default function ProfileCard() {
-	const { userData } = useAuth();
-	const pictureEndpoint = `http://localhost:8080/users/${userData?.username}`;
+	const { userData } = useUserData();
 	if (!userData) return null;
 	return (
 		<Card className='mx-auto w-full max-w-md overflow-hidden'>
 			{/* Banner */}
-			<div className='relative h-20'>
-				<picture>
-					<img
-						src={pictureEndpoint + '/banner'}
-						alt='Profile banner'
-						width={400}
-						height={120}
-						className='object-cover'
-					/>
-				</picture>
+			<div className='relative h-24'>
+				<Banner
+					src={getPictureEndpoint(userData.username, 'banner')}
+					alt={`Profile banner of ${userData.username}`}
+				/>
 			</div>
 
 			<CardContent className='relative px-6 pb-8 pt-16'>
 				{/* Profile Picture */}
-				<Avatar className='absolute left-1/2 top-0 size-32 -translate-x-1/2 -translate-y-1/2 border-4'>
-					<AvatarImage src={pictureEndpoint + '/avatar'} alt={`Profile picture of ${userData.username}`} />
-					<AvatarFallback>
-						{userData.username}
-					</AvatarFallback>
-				</Avatar>
+				<UserAvatar
+					src={getPictureEndpoint(userData.username, 'avatar')}
+					alt={`Profile picture of ${userData.username}`}
+					username={userData.username}
+					className='absolute left-1/2 top-0 size-32 -translate-x-1/2 -translate-y-1/2 border-4'
+				/>
 
 				{/* User Info */}
 				<div className='mt-2 text-center'>
@@ -44,7 +40,6 @@ export default function ProfileCard() {
 				</p>
 
 				{/* Stats */}
-
 				<div className='mt-6 flex items-center justify-between text-sm'>
 					<div className='text-center'>
 						<p className='font-semibold'>1,2K</p>

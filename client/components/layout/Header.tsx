@@ -17,7 +17,9 @@ import Image from 'next/image';
 // import { Switch } from '@/components/ui/switch'
 import { useTheme } from '@/hook/useTheme';
 import useThemeStore from '@/lib/store/useThemeStore';
-import useAuth from '@/hook/auth/useAuth';
+import useUserData from '@/hook/user/useUserData';
+import useLogout from '@/hook/auth/useLogout';
+import { getPictureEndpoint } from '@/lib/utils';
 
 // Mock notifications data
 const notifications = [
@@ -28,7 +30,8 @@ const notifications = [
 ];
 
 export default function Header() {
-	const { userData, userDataPending, userDataError, logout } = useAuth();
+	const { userData, userDataIsLoading, userDataError } = useUserData();
+	const { logout } = useLogout();
 
 	const toggleTheme = useThemeStore((state) => state.toggleTheme);
 	useTheme();
@@ -41,7 +44,7 @@ export default function Header() {
 		}
 	};
 
-	if (userDataPending) {
+	if (userDataIsLoading) {
 		return <p>Loading...</p>;
 	}
 
@@ -108,7 +111,7 @@ export default function Header() {
 						className='overflow-hidden rounded-lg'
 						aria-label='Go to profile'>
 						<Image
-							src='https://i.pravatar.cc/300'
+							src={userData?.username ? getPictureEndpoint(userData.username, 'avatar') : '/default-avatar.png'}
 							alt='Profile picture'
 							width={32}
 							height={32}
