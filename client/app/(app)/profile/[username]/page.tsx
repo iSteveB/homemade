@@ -16,7 +16,7 @@ const ProfilPage = () => {
 	const { userData } = useUserData();
 	const pictureEndPoint = `http://localhost:8080/users/${userData?.username}`;
 	if (!userData) return null;
-
+	console.log(userData);
 	return (
 		<main className='mt-6 flex flex-col gap-4'>
 			<Card className='mx-auto w-full max-w-5xl overflow-hidden'>

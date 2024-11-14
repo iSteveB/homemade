@@ -42,16 +42,16 @@ export default function ProfileCard() {
 				{/* Stats */}
 				<div className='mt-6 flex items-center justify-between text-sm'>
 					<div className='text-center'>
-						<p className='font-semibold'>1,2K</p>
+						<p className='font-semibold'>{userData?.followersCount}</p>
 						<p>Followers</p>
 					</div>
 					<div className='text-center'>
-						<p className='font-semibold'>19</p>
-						<p>Posts</p>
+						<p className='font-semibold'>{userData?.followingCount}</p>
+						<p>Following</p>
 					</div>
 					<div className='text-center'>
-						<p className='font-semibold'>567</p>
-						<p>Following</p>
+						<p className='font-semibold'>{userData?.recipesCount}</p>
+						<p>Posts</p>
 					</div>
 				</div>
 			</CardContent>

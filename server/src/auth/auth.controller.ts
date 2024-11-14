@@ -16,11 +16,13 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RequestWithUser } from './jwt.strategy';
 import { CreateUserDto } from './dto/create-user.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly usersService: UsersService,
     private readonly databaseService: DatabaseService,
   ) {}
 
@@ -100,9 +102,8 @@ export class AuthController {
     @Request() request: RequestWithUser,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const user = await this.databaseService.user.findUnique({
-      where: { id: request.user.id },
-    });
+    const user = await this.usersService.getUserById(request.user.id);
+
     if (!user) {
       response.cookie('token', '', {
         httpOnly: true,
