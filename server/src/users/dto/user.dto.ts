@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class SafeUserDto {
   @IsString()
@@ -21,4 +27,13 @@ export class SafeUserDto {
   @IsString()
   @MaxLength(500)
   biography: string;
+
+  @IsInt()
+  followersCount: number;
+
+  @IsInt()
+  followingCount: number;
+
+  @IsInt()
+  recipesCount: number;
 }

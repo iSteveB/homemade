@@ -12,8 +12,8 @@ import {
 	CardFooter,
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import useAuth from '@/hook/auth/useAuth';
 import Link from 'next/link';
+import useLogin from '@/hook/auth/useLogin';
 
 const loginSchema = z.object({
 	email: z.string().email('Adresse email invalide').toLowerCase(),
@@ -25,7 +25,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
-	const { login, loginIsError, loginErrorMessage, loginIsLoading } = useAuth();
+	const { login, loginIsError, loginErrorMessage, loginIsLoading } = useLogin();
 
 	const [formData, setFormData] = useState<LoginFormData>({
 		email: '',

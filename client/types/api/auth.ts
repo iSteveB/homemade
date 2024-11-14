@@ -19,16 +19,17 @@ export const resetPasswordSchema = z.object({
 });
 
 export const UserSchema = z.object({
-	id: z.string().uuid(),
+	name: z.string().min(3, 'Le nom doit contenir au moins 3 caract res'),
 	username: z
 		.string()
 		.min(3, "Le nom d'utilisateur doit contenir au moins 3 caract res"),
-	name: z.string().min(3, 'Le nom doit contenir au moins 3 caract res'),
-	avatarFileKey: z.string().url(),
-	bannerFileKey: z.string().url(),
+	email: z.string().email('Adresse email invalide'),
 	biography: z.string().optional(),
 	createdAt: z.date(),
 	updatedAt: z.date(),
+	followersCount: z.number(),
+	followingCount: z.number(),
+	recipesCount: z.number(),
 });
 
 export const VerifyResetTokenSchema = z.object({

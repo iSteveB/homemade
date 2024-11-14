@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+// useVerifyResetToken.ts
+
+import { useMutation } from '@tanstack/react-query';
 import { VerifyResetToken } from '@/types/api/auth';
 
-const useVerifyResetToken = (token: string) => {
-	const verifyResetToken = useQuery<VerifyResetToken>({
-		queryKey: ['verify-reset-token', token],
-		queryFn: async ({ queryKey }) => {
-			const token = queryKey[1];
+const useVerifyResetToken = () => {
+	const verifyResetTokenMutation = useMutation<VerifyResetToken, Error, string>({
+		mutationFn: async (token: string) => {
 			const response = await fetch(
 				`http://localhost:8080/auth/verify-reset-password-token?token=${token}`,
 				{
@@ -19,14 +19,15 @@ const useVerifyResetToken = (token: string) => {
 			}
 
 			return await response.json();
-		},
-		enabled: !!token,
+		}
 	});
 
 	return {
-		data: verifyResetToken.data,
-		isError: verifyResetToken.isError,
-		isLoading: verifyResetToken.isLoading,
+		verifyResetToken: verifyResetTokenMutation.mutate,
+		verifyResetTokenIsError: verifyResetTokenMutation.isError,
+		verifyResetTokenIsLoading: verifyResetTokenMutation.isPending,
+		verifyResetTokenErrorMessage: verifyResetTokenMutation.error?.message,
+		verifyResetTokenData: verifyResetTokenMutation.data,
 	};
 };
 

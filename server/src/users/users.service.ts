@@ -18,25 +18,28 @@ export class UsersService {
   async getUserById(id: string): Promise<SafeUserDto> {
     const user = await this.databaseService.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        email: true,
-        biography: true,
-        createdAt: true,
-        updatedAt: true,
-        avatarFileKey: true,
-        bannerFileKey: true,
+      include: {
+        _count: {
+          select: {
+            recipes: true,
+            followers: true,
+            following: true,
+          },
+        },
       },
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id: _, avatarFileKey, bannerFileKey, ...safeUser } = user;
-    return { ...safeUser };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, prettier/prettier
+    const { id: _, avatarFileKey, bannerFileKey, _count: { followers, following, recipes }, isAdmin, resetPasswordToken, isResettingPassword, password, ...safeUser } = user;
+    return {
+      ...safeUser,
+      followersCount: followers,
+      followingCount: following,
+      recipesCount: recipes,
+    };
   }
 
   async getUserByUsername(

@@ -3,11 +3,11 @@ import { useRouter } from 'next/navigation';
 import { LoginCredentials, User } from '@/types/api/auth';
 import { login } from '@/api/auth.api';
 
-const useLogin = (credentials: LoginCredentials) => {
+const useLogin = () => {
   const router = useRouter();
 
   const loginMutation = useMutation<User, Error, LoginCredentials>({
-    mutationFn: () => login(credentials),
+    mutationFn: (credentials: LoginCredentials) => login(credentials),
     onSuccess: () => {
       router.push('/home');
     },

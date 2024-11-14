@@ -13,7 +13,8 @@ import {
 	CardFooter,
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import useAuth from '@/hook/auth/useAuth';
+import useResetPassword from '@/hook/auth/useResetPassword';
+import useVerifyResetToken from '@/hook/auth/useVerifyResetToken';
 
 const resetPasswordSchema = z.object({
 	email: z.string().email('Adresse email invalide').toLowerCase(),
@@ -26,8 +27,8 @@ const ResetPasswordForm = ({ token }: { token?: string }) => {
 		resetPasswordErrorMessage,
 		resetPasswordIsLoading,
 		resetPasswordIsSuccess,
-		verifyResetToken,
-	} = useAuth();
+	} = useResetPassword();
+	const { verifyResetToken } = useVerifyResetToken();
 
 	const [email, setEmail] = useState('');
 	const [error, setError] = useState<string | null>(null);

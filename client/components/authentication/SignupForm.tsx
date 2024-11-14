@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle2 } from 'lucide-react';
-import useAuth from '@/hook/auth/useAuth';
 import { useRouter } from 'next/navigation';
+import useSignup from '@/hook/auth/useSignup';
 
 const signupSchema = z
 	.object({
@@ -43,7 +43,7 @@ type SignupFormData = z.infer<typeof signupSchema>;
 
 const SignupForm = () => {
 	const { signup, signupIsError, signupErrorMessage, signupIsLoading } =
-		useAuth();
+		useSignup();
 	const router = useRouter();
 
 	const [formData, setFormData] = useState<SignupFormData>({

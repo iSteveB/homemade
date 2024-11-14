@@ -56,16 +56,16 @@ const ProfilPage = () => {
 						{/* Stats */}
 						<div className=' flex items-center justify-center space-x-8'>
 							<div className='text-center'>
-								<p className='font-semibold'>1,234</p>
+								<p className='font-semibold'>{userData?.followersCount}</p>
 								<p className='text-sm'>Followers</p>
 							</div>
 							<div className='text-center'>
-								<p className='font-semibold'>567</p>
+								<p className='font-semibold'>{userData?.followingCount}</p>
 								<p className='text-sm'>Following</p>
 							</div>
 							<div className='text-center'>
-								<p className='font-semibold'>19</p>
-								<p className='text-sm'>Posts</p>
+								<p className='font-semibold'>{userData?.recipesCount}</p>
+								<p className='text-sm'>Recipes</p>
 							</div>
 						</div>
 						<Button variant='ghost' className='flex gap-2'>
