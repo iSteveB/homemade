@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Utensils, ImagePlay, MessageSquare, Send, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import RecipeModal from './components/RecipeModal';
+import RecipeModal from './components/recipeModal/RecipeModal';
 import ThreadModal from './components/ThreadModal';
 
 export default function CreatePost() {
@@ -39,7 +39,7 @@ export default function CreatePost() {
 	};
 
 	return (
-		<Card className='container mx-auto p-4 dark:bg-dark-primary'>
+		<Card className='dark:bg-dark-primary container mx-auto p-4'>
 			<div className='mx-auto w-full max-w-2xl space-y-4'>
 				<Input
 					placeholder='Something Yummy?'

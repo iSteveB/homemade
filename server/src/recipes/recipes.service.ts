@@ -1,22 +1,46 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, Recipe } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
+import { AwsS3Service } from 'src/aws/awsS3.service';
 import { slugify } from 'utils/slugify';
-import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipe.dto';
+import {
+  CreateRecipeDto,
+  UpdateRecipeDto,
+  SafeRecipeDto,
+} from './dto/recipe.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RecipesService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly awsS3Service: AwsS3Service,
+  ) {}
 
   async create(
     createRecipeDto: CreateRecipeDto,
     userId: string,
+    pictures?: Express.Multer.File[],
   ): Promise<Recipe> {
+    const recipeId = uuidv4();
     const { title } = createRecipeDto;
     const slug = slugify(title);
 
+    const uploadedPictures = await Promise.all(
+      pictures
+        ? pictures.map((file) =>
+            this.awsS3Service.uploadFile(file, {
+              userId,
+              recipeId,
+              fileType: 'recipePhoto',
+            }),
+          )
+        : [],
+    );
+
     return await this.databaseService.recipe.create({
       data: {
+        id: recipeId,
         title: createRecipeDto.title,
         description: createRecipeDto.description,
         slug,
@@ -85,12 +109,12 @@ export class RecipesService {
         },
         // Gestion des images
         pictures: {
-          create: createRecipeDto.pictures?.map((picture) => ({
+          create: uploadedPictures.map((pictureData) => ({
             picture: {
               create: {
-                name: picture.name,
-                url: picture.url,
-                description: picture.description,
+                pictureId: pictureData.pictureId,
+                name: pictureData.originalFileName,
+                fileKey: pictureData.fileKey,
               },
             },
           })),
@@ -127,7 +151,6 @@ export class RecipesService {
   async findAllRecipes() {
     return this.databaseService.recipe.findMany({
       include: {
-        user: true,
         duration: {
           include: {
             duration: true,
@@ -135,49 +158,167 @@ export class RecipesService {
         },
         category: {
           include: {
-            category: true, // Inclure les données de la catégorie
+            category: true,
           },
         },
         pictures: {
           include: {
-            picture: true, // Inclure les données de l'image
+            picture: true,
           },
         },
         ingredients: {
           include: {
-            ingredient: true, // Inclure les données de l'ingrédient
+            ingredient: true,
           },
         },
         ustensils: {
           include: {
-            ustensil: true, // Inclure les données de l'ustensile
+            ustensil: true,
           },
         },
         steps: {
           include: {
-            step: true, // Inclure les données de l'étape
+            step: true,
           },
         },
         tags: {
           include: {
-            tag: true, // Inclure les données du tag
+            tag: true,
           },
         },
         comments: {
           include: {
-            comment: true, // Inclure les données de l'utilisateur
+            comment: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+            username: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            FavoriteRecipe: true,
           },
         },
       },
     });
   }
 
-  async findAllByUser(userId?: string): Promise<Recipe[]> {
-    if (userId) {
-      return this.databaseService.recipe.findMany({ where: { userId } });
+  async findAllByUser(userId: string): Promise<SafeRecipeDto[]> {
+    const userRecipes = await this.databaseService.recipe.findMany({
+      where: { userId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            username: true,
+          },
+        },
+        duration: {
+          include: {
+            duration: true,
+          },
+        },
+        category: {
+          include: {
+            category: true,
+          },
+        },
+        pictures: {
+          include: {
+            picture: true,
+          },
+        },
+        ingredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+        ustensils: {
+          include: {
+            ustensil: true,
+          },
+        },
+        steps: {
+          include: {
+            step: true,
+          },
+        },
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+        comments: {
+          include: {
+            comment: true,
+          },
+        },
+        FavoriteRecipe: {
+          select: {
+            userId: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            FavoriteRecipe: true,
+          },
+        },
+      },
+    });
+
+    if (!userRecipes) {
+      return [];
     }
 
-    return this.databaseService.recipe.findMany();
+    const safeRecipe = userRecipes.map(
+      ({
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        userId,
+        tags,
+        ingredients,
+        ustensils,
+        steps,
+        pictures,
+        duration,
+        ...recipe
+      }) => ({
+        ...recipe,
+        tags: tags.map(({ tag }) => tag),
+        ingredients: ingredients.map(({ ingredient, quantity, unit }) => ({
+          name: ingredient.name,
+          id: ingredient.id,
+          quantity,
+          unit,
+        })),
+        ustensils: ustensils.map(({ ustensil }) => ({
+          name: ustensil.name,
+          id: ustensil.id,
+        })),
+        steps: steps.map(({ step }) => ({
+          description: step.description,
+          order: step.order,
+        })),
+        pictures: pictures.map(({ picture }) => ({
+          pictureId: picture.id,
+          name: picture.name,
+        })),
+        duration: duration.map(({ duration }) => ({
+          preparation: duration.preparation,
+          cooking: duration.cooking,
+          rest: duration.rest,
+        }))[0],
+        isFavorite: !!recipe.FavoriteRecipe.length,
+        commentsCount: recipe._count.comments,
+        favoritesCount: recipe._count.FavoriteRecipe,
+      }),
+    );
+
+    return safeRecipe;
   }
 
   async findOne(id: string): Promise<Recipe | undefined> {
@@ -210,7 +351,11 @@ export class RecipesService {
     });
   }
 
-  async update(id: string, updateRecipeDto: UpdateRecipeDto): Promise<Recipe> {
+  async update(
+    id: string,
+    updateRecipeDto: UpdateRecipeDto,
+    pictures: Express.Multer.File[],
+  ): Promise<Recipe> {
     const existingRecipe = await this.databaseService.recipe.findUnique({
       where: { id },
     });
@@ -222,6 +367,17 @@ export class RecipesService {
     const slug = updateRecipeDto.title
       ? slugify(updateRecipeDto.title)
       : undefined;
+
+    const existingSlug = await this.databaseService.recipe.findUnique({
+      where: { slug },
+    });
+
+    if (existingSlug && existingSlug.id !== id) {
+      throw new NotFoundException(
+        `La recette avec le slug ${slug} existe deja.`,
+      );
+    }
+    console.log(pictures);
 
     const data: Prisma.RecipeUpdateInput = {
       // Mise à jour des champs simples
@@ -301,20 +457,20 @@ export class RecipesService {
       }),
 
       // Gestion des pictures
-      ...(updateRecipeDto.pictures && {
-        pictures: {
-          deleteMany: {}, // Supprime les pictures existantes
-          create: updateRecipeDto.pictures.map((pictureDto) => ({
-            picture: {
-              create: {
-                url: pictureDto.url,
-                description: pictureDto.description,
-                name: pictureDto.name,
-              },
-            },
-          })),
-        },
-      }),
+      // ...(updateRecipeDto.pictures && {
+      //   pictures: {
+      //     deleteMany: {}, // Supprime les pictures existantes
+      //     create: updateRecipeDto.pictures.map((pictureDto) => ({
+      //       picture: {
+      //         create: {
+      //           url: pictureDto.url,
+      //           description: pictureDto.description,
+      //           name: pictureDto.name,
+      //         },
+      //       },
+      //     })),
+      //   },
+      // }),
 
       // Gestion de la durée
       ...(updateRecipeDto.duration && {

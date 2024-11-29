@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { UploadFileOptionsDto } from 'src/aws/dto/uploadFile.dto';
 import { generateFileKey } from 'utils/fileUtils';
 import { convertToWebP } from 'utils/imageConverter';
+import { v4 as uuidv4 } from 'uuid';
 
 const AWS_REGION = process.env.AWS_REGION;
 const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
@@ -59,7 +60,9 @@ export class AwsS3Service {
       throw new Error(`Failed to upload file to S3. Error : ${result}`);
     }
 
-    return fileKey;
+    const pictureId = uuidv4();
+
+    return { fileKey, pictureId, originalFileName: fileName + extension };
   }
 
   async deleteFile({ fileKey }: { fileKey: string }) {

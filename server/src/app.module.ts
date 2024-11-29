@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { AwsS3Service } from './aws/awsS3.service';
 import { ConfigModule } from '@nestjs/config';
 import { MailerService } from './mailer/mailer.service';
+import { PicturesModule } from './pictures/pictures.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { MailerService } from './mailer/mailer.service';
     TagsModule,
     AuthModule,
     UsersModule,
+    PicturesModule,
   ],
   controllers: [AppController],
   providers: [

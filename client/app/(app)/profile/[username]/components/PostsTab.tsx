@@ -1,14 +1,18 @@
-import { TabsContent } from '@/components/ui/tabs';
 import React from 'react';
-
+import { TabsContent } from '@/components/ui/tabs';
+import { useGetUserRecipes } from '@/hook/posts/useGetRecipes';
+import { FetchRecipe } from '@/types/recipes';
+import RecipeSummary from '@/components/post/RecipeSummary';
 const PostsTab = () => {
-  return (
-    <TabsContent value='posts' className='mt-10'>
-			<h3 className='mb-4 text-lg font-semibold'>Your Posts</h3>
-			{/* Add your posts content here */}
-			<p>This is where your posts will be displayed.</p>
+	const { userRecipes } = useGetUserRecipes();
+	console.log('userRecipes', userRecipes);
+	return (
+		<TabsContent value='posts' className='mt-10'>
+			{userRecipes?.map((recipe: FetchRecipe) => (
+				<RecipeSummary recipe={recipe} key={recipe.id} />
+			))}
 		</TabsContent>
-  );
+	);
 };
 
 export default PostsTab;

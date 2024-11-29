@@ -111,9 +111,9 @@ model RecipesTags {
 
 model Picture {
   id              String            @id @default(uuid())
+  pictureId       String            @unique
   name            String
-  url             String
-  description     String?
+  fileKey         String
   PicturesRecipes PicturesRecipes[]
 }
 

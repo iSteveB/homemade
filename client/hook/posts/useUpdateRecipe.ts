@@ -1,4 +1,4 @@
-import { Recipe } from '@/types/api/posts';
+import { Recipe } from '@/types/type';
 import { useMutation } from '@tanstack/react-query';
 import { updateRecipe } from '@/api/posts.api';
 

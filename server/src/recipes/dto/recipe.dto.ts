@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
@@ -41,6 +41,7 @@ export class IngredientDto {
 
   @IsNumber()
   @Min(0)
+  @Transform(({ value }) => Number(value))
   quantity: number;
 
   @IsString()
@@ -62,31 +63,36 @@ export class StepDto {
   description: string;
 
   @IsNumber()
+  @Transform(({ value }) => Number(value))
   order: number;
 }
 
 export class PictureDto {
   @IsString()
-  name: string;
+  pictureId: string;
 
   @IsString()
-  url: string;
+  name: string;
 
   @IsOptional()
   @IsString()
-  description?: string;
+  fileKey?: string;
 }
 
 export class DurationDto {
   @IsNumber()
+  @Transform(({ value }) => Number(value))
   preparation: number;
 
   @IsNumber()
+  @Transform(({ value }) => Number(value))
   cooking: number;
 
   @IsNumber()
+  @Transform(({ value }) => Number(value))
   rest: number;
 }
+
 export class CreateRecipeDto {
   @IsString()
   @IsNotEmpty()
@@ -117,6 +123,7 @@ export class CreateRecipeDto {
 
   @IsInt()
   @Min(1)
+  @Transform(({ value }) => Number(value))
   servings: number;
 
   @IsOptional()
@@ -140,9 +147,10 @@ export class CreateRecipeDto {
   pictures?: PictureDto[];
 
   @IsOptional()
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @Type(() => DurationDto)
   duration?: DurationDto;
 }
 
 export class UpdateRecipeDto extends PartialType(CreateRecipeDto) {}
+export class SafeRecipeDto extends PartialType(CreateRecipeDto) {}

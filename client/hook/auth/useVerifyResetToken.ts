@@ -1,10 +1,14 @@
 // useVerifyResetToken.ts
 
 import { useMutation } from '@tanstack/react-query';
-import { VerifyResetToken } from '@/types/api/auth';
+import { VerifyResetToken } from '@/types/auth';
 
 const useVerifyResetToken = () => {
-	const verifyResetTokenMutation = useMutation<VerifyResetToken, Error, string>({
+	const verifyResetTokenMutation = useMutation<
+		VerifyResetToken,
+		Error,
+		string
+	>({
 		mutationFn: async (token: string) => {
 			const response = await fetch(
 				`http://localhost:8080/auth/verify-reset-password-token?token=${token}`,
@@ -19,7 +23,7 @@ const useVerifyResetToken = () => {
 			}
 
 			return await response.json();
-		}
+		},
 	});
 
 	return {

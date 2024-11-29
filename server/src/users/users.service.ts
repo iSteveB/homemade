@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { AwsS3Service } from 'src/aws/awsS3.service';
@@ -32,8 +33,17 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, prettier/prettier
-    const { id: _, avatarFileKey, bannerFileKey, _count: { followers, following, recipes }, isAdmin, resetPasswordToken, isResettingPassword, password, ...safeUser } = user;
+    const {
+      id: _,
+      avatarFileKey,
+      bannerFileKey,
+      _count: { followers, following, recipes },
+      isAdmin,
+      resetPasswordToken,
+      isResettingPassword,
+      password,
+      ...safeUser
+    } = user;
     return {
       ...safeUser,
       followersCount: followers,
@@ -91,11 +101,13 @@ export class UsersService {
         fileType,
       });
 
-      if (fileType === 'avatar') {
-        dataToUpdate.avatarFileKey = fileKey;
-      } else if (fileType === 'banner') {
-        dataToUpdate.bannerFileKey = fileKey;
-      }
+      // if (fileType === 'avatar') {
+      //   dataToUpdate.avatarFileKey = fileKey;
+      // } else if (fileType === 'banner') {
+      //   dataToUpdate.bannerFileKey = fileKey;
+      // } else {
+      //   throw new Error('Invalid file type');
+      // }
     }
 
     return await this.databaseService.user.update({
