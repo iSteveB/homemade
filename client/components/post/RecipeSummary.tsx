@@ -35,7 +35,9 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 	const [isCommented, setIsCommented] = useState(false);
 	const [isShared, setIsShared] = useState(false);
 	const [showComments, setShowComments] = useState(false);
+	const pictureId = recipe?.pictures?.[0]?.picture.pictureId ?? '';
 
+	console.log('recipe', recipe);
 	const handleLike = () => {
 		if (isLiked) {
 			setLikes(likes - 1);
@@ -113,10 +115,8 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 					</CardTitle>
 					{recipe.pictures && recipe.pictures.length > 0 && (
 						<Image
-							src={recipe.pictures[0].url}
-							alt={
-								recipe.pictures[0].description || 'Recipe image'
-							}
+							src={'http://localhost:8080/pictures/' + pictureId}
+							alt={recipe.title || 'Recipe image'}
 							className='mb-4 rounded-lg object-cover'
 							width={600}
 							height={400}

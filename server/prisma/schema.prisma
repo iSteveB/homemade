@@ -115,6 +115,7 @@ model Picture {
   name            String
   fileKey         String
   PicturesRecipes PicturesRecipes[]
+  createdAt       DateTime          @default(now())
 }
 
 model PicturesRecipes {
@@ -222,7 +223,7 @@ model UserFollowers {
   user       User     @relation(fields: [userId], references: [id])
   follower   Follower @relation(fields: [followerId], references: [id])
 
-  @@id([userId, followerId])
+  @@id([userId, followerId]) 
 }
 
 model Following {

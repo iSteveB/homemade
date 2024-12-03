@@ -56,7 +56,14 @@ const UstensilSchema = UstensilInputSchema.extend({
 
 const StepSchema = StepInputSchema; // Supprimez cet endroit si des champs supplémentaires sont présents lors de la récupération
 
-const PictureSchema = PictureInputSchema; // Idem si des champs supplémentaires sont présents
+const PictureSchema = z.object({
+	recipeId: z.string().uuid(),
+	pictureId: z.string().uuid(),
+	picture: z.object({
+		pictureId: z.string().uuid(),
+		name: z.string(),
+	}),
+}); // Idem si des champs supplémentaires sont présents
 
 const DurationSchema = DurationInputSchema; // Idem si des champs supplémentaires sont présents
 

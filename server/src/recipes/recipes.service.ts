@@ -163,7 +163,12 @@ export class RecipesService {
         },
         pictures: {
           include: {
-            picture: true,
+            picture: {
+              select: {
+                pictureId: true,
+                name: true,
+              },
+            },
           },
         },
         ingredients: {

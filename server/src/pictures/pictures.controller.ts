@@ -32,7 +32,9 @@ export class PicturesController {
     // Définir les en-têtes appropriés
     res.set({
       'Content-Type': 'image/webp',
-      'Cache-Control': 'max-age=31536000',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      ETag: `"${pictureId}"`,
+      'Last-Modified': new Date(picture.createdAt).toUTCString(),
     });
 
     // Envoyer le flux de l'image

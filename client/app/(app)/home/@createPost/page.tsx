@@ -30,16 +30,8 @@ export default function CreatePost() {
 		fileInputRef.current?.click();
 	};
 
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			console.log('File selected:', file.name);
-			// Handle file upload logic here
-		}
-	};
-
 	return (
-		<Card className='dark:bg-dark-primary container mx-auto p-4'>
+		<Card className='container mx-auto p-4 dark:bg-dark-primary'>
 			<div className='mx-auto w-full max-w-2xl space-y-4'>
 				<Input
 					placeholder='Something Yummy?'
@@ -89,7 +81,6 @@ export default function CreatePost() {
 					type='file'
 					ref={fileInputRef}
 					className='hidden'
-					onChange={handleFileChange}
 					accept='image/png,image/jpeg,image/gif,image/webp,video/*'
 				/>
 
