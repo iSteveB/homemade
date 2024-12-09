@@ -35,7 +35,7 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 	const [isCommented, setIsCommented] = useState(false);
 	const [isShared, setIsShared] = useState(false);
 	const [showComments, setShowComments] = useState(false);
-	const pictureId = recipe?.pictures?.[0]?.picture.pictureId ?? '';
+	const pictureId = recipe?.pictures?.[0]?.pictureId ?? '';
 
 	console.log('recipe', recipe);
 	const handleLike = () => {
@@ -63,53 +63,51 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 	};
 
 	return (
-		<Link href={`/recipe/${recipe.id}`}>
-			<Card className='mx-auto my-8 w-full max-w-2xl cursor-pointer transition-shadow hover:shadow-md'>
-				<CardHeader>
-					<div className='flex items-start justify-between'>
-						<div className='flex items-center space-x-4'>
-							<UserAvatar
-								src={getPictureEndpoint(
-									recipe.user.username,
-									'avatar'
-								)}
-								alt={`Photo de profil de ${recipe.user.name}`}
-								username={recipe.user.username}
-								className='size-16'
-							/>
-							<div className='flex items-center gap-3'>
-								<div>
-									<p className='font-semibold'>
-										{recipe.user.name}
-									</p>
-									<p className='text-xs'>
-										@{recipe.user.username}
-									</p>
-								</div>
-								<span>&#8226;</span>
+		<Card className='mx-auto my-8 w-full max-w-2xl cursor-pointer transition-shadow hover:shadow-md'>
+			<CardHeader>
+				<div className='flex items-start justify-between'>
+					<div className='flex items-center space-x-4'>
+						<UserAvatar
+							src={getPictureEndpoint(
+								recipe.user.username,
+								'avatar'
+							)}
+							alt={`Photo de profil de ${recipe.user.name}`}
+							username={recipe.user.username}
+							className='size-16'
+						/>
+						<div className='flex items-center gap-3'>
+							<div>
+								<p className='font-semibold'>
+									{recipe.user.name}
+								</p>
 								<p className='text-xs'>
-									{getTimeElapsed(new Date(recipe.createdAt))}
+									@{recipe.user.username}
 								</p>
 							</div>
+							<span>&#8226;</span>
+							<p className='text-xs'>
+								{getTimeElapsed(new Date(recipe.createdAt))}
+							</p>
 						</div>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant='ghost' size='icon'>
-									<MoreVertical className='size-4' />
-									<span className='sr-only'>
-										More options
-									</span>
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align='end'>
-								<DropdownMenuItem>Edit</DropdownMenuItem>
-								<DropdownMenuItem>Delete</DropdownMenuItem>
-								<DropdownMenuItem>Report</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
 					</div>
-				</CardHeader>
-				<CardContent className='px-6'>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant='ghost' size='icon'>
+								<MoreVertical className='size-4' />
+								<span className='sr-only'>More options</span>
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align='end'>
+							<DropdownMenuItem>Edit</DropdownMenuItem>
+							<DropdownMenuItem>Delete</DropdownMenuItem>
+							<DropdownMenuItem>Report</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
+			</CardHeader>
+			<CardContent className='px-6'>
+				<Link href={`/recipe/${recipe.id}`}>
 					<CardTitle className='py-4 text-lg'>
 						{recipe.title}
 					</CardTitle>
@@ -131,63 +129,61 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 							</Badge>
 						))}
 					</div>
-				</CardContent>
-				<CardFooter className='flex justify-between p-6 pt-0'>
-					<Button
-						variant='ghost'
-						size='sm'
-						className={`flex items-center space-x-2 ${
-							isCommented ? 'text-blue-500' : ''
+				</Link>
+			</CardContent>
+			<CardFooter className='flex justify-between p-6 pt-0'>
+				<Button
+					variant='ghost'
+					size='sm'
+					className={`flex items-center space-x-2 ${
+						isCommented ? 'text-blue-500' : ''
+					}`}
+					onClick={(e) => {
+						e.preventDefault();
+						handleComment();
+					}}>
+					<MessageCircle
+						className={`size-5 ${
+							isCommented ? 'fill-current' : ''
 						}`}
-						onClick={(e) => {
-							e.preventDefault();
-							handleComment();
-						}}>
-						<MessageCircle
-							className={`size-5 ${
-								isCommented ? 'fill-current' : ''
-							}`}
-						/>
-						<span>{comments} Comments</span>
-					</Button>
-					<Button
-						variant='ghost'
-						size='sm'
-						className={`flex items-center space-x-2 ${
-							isLiked ? 'text-red-500' : ''
-						}`}
-						onClick={(e) => {
-							e.preventDefault();
-							handleLike();
-						}}>
-						<Heart
-							className={`size-5 ${
-								isLiked ? 'fill-current' : ''
-							}`}
-						/>
-						<span>{likes} Likes</span>
-					</Button>
-					<Button
-						variant='ghost'
-						size='sm'
-						className={`flex items-center space-x-2 ${
-							isShared ? 'text-green-500' : ''
-						}`}
-						onClick={(e) => {
-							e.preventDefault();
-							handleShare();
-						}}>
-						<Share2 className='size-5' />
-						<span>{shares} Shares</span>
-					</Button>
-				</CardFooter>
-				{showComments && (
-					<div className='px-6 pb-4'>
-						{/* Add your comment component here */}
-						<p>Comments will be displayed here</p>
-					</div>
-				)}
-			</Card>
-		</Link>
+					/>
+					<span>{comments} Comments</span>
+				</Button>
+				<Button
+					variant='ghost'
+					size='sm'
+					className={`flex items-center space-x-2 ${
+						isLiked ? 'text-red-500' : ''
+					}`}
+					onClick={(e) => {
+						e.preventDefault();
+						handleLike();
+					}}>
+					<Heart
+						className={`size-5 ${isLiked ? 'fill-current' : ''}`}
+					/>
+					<span>{likes} Likes</span>
+				</Button>
+				<Button
+					variant='ghost'
+					size='sm'
+					className={`flex items-center space-x-2 ${
+						isShared ? 'text-green-500' : ''
+					}`}
+					onClick={(e) => {
+						e.preventDefault();
+						handleShare();
+					}}>
+					<Share2 className='size-5' />
+					<span>{shares} Shares</span>
+				</Button>
+			</CardFooter>
+			{showComments && (
+				<div className='px-6 pb-4'>
+					{/* Add your comment component here */}
+					<p>Comments will be displayed here</p>
+				</div>
+			)}
+		</Card>
 	);
 }

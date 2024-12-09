@@ -149,7 +149,7 @@ export class RecipesService {
   }
 
   async findAllRecipes() {
-    return this.databaseService.recipe.findMany({
+    const recipes = await this.databaseService.recipe.findMany({
       include: {
         duration: {
           include: {
@@ -210,6 +210,50 @@ export class RecipesService {
         },
       },
     });
+
+    const safeRecipes = recipes.map(
+      ({
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        userId,
+        tags,
+        ingredients,
+        ustensils,
+        steps,
+        pictures,
+        duration,
+        ...recipe
+      }) => ({
+        ...recipe,
+        tags: tags.map(({ tag }) => tag),
+        ingredients: ingredients.map(({ ingredient, quantity, unit }) => ({
+          name: ingredient.name,
+          id: ingredient.id,
+          quantity,
+          unit,
+        })),
+        ustensils: ustensils.map(({ ustensil }) => ({
+          name: ustensil.name,
+          id: ustensil.id,
+        })),
+        steps: steps.map(({ step }) => ({
+          description: step.description,
+          order: step.order,
+        })),
+        pictures: pictures.map(({ picture }) => ({
+          pictureId: picture.pictureId,
+          name: picture.name,
+        })),
+        duration: duration.map(({ duration }) => ({
+          preparation: duration.preparation,
+          cooking: duration.cooking,
+          rest: duration.rest,
+        }))[0],
+        commentsCount: recipe._count.comments,
+        favoritesCount: recipe._count.FavoriteRecipe,
+      }),
+    );
+
+    return safeRecipes;
   }
 
   async findAllByUser(userId: string): Promise<SafeRecipeDto[]> {
@@ -234,7 +278,12 @@ export class RecipesService {
         },
         pictures: {
           include: {
-            picture: true,
+            picture: {
+              select: {
+                pictureId: true,
+                name: true,
+              },
+            },
           },
         },
         ingredients: {
@@ -309,7 +358,7 @@ export class RecipesService {
           order: step.order,
         })),
         pictures: pictures.map(({ picture }) => ({
-          pictureId: picture.id,
+          pictureId: picture.pictureId,
           name: picture.name,
         })),
         duration: duration.map(({ duration }) => ({
