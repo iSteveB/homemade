@@ -51,13 +51,9 @@ export const getTimeElapsed = (date: Date): string => {
 
 export const getPictureEndpoint = (
 	username: string,
-	endpoint: 'avatar' | 'banner'
+	type: 'avatar' | 'banner',
+	timestamp?: number
 ) => {
-	const validEnpoints = ['avatar', 'banner'] as const;
-
-	if (!validEnpoints.includes(endpoint)) {
-		throw new Error('Invalid endpoint: ' + endpoint);
-	}
-	const BASE_URL = 'http://localhost:8080/users/';
-	return `${BASE_URL}${username}/${endpoint}`;
+	const baseUrl = `http://localhost:8080/users/${username}/${type}`;
+	return timestamp ? `${baseUrl}?t=${timestamp}` : baseUrl;
 };

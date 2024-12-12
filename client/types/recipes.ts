@@ -122,6 +122,8 @@ export const FetchRecipeSchema = z.object({
 
 	title: z.string().min(1).max(100),
 
+	slug: z.string(),
+
 	description: z.string().max(500).optional().nullable(),
 
 	difficulty: z.enum(['EASY', 'MEDIUM', 'HARD']).optional().nullable(),

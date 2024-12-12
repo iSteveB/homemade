@@ -37,7 +37,6 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 	const [showComments, setShowComments] = useState(false);
 	const pictureId = recipe?.pictures?.[0]?.pictureId ?? '';
 
-	console.log('recipe', recipe);
 	const handleLike = () => {
 		if (isLiked) {
 			setLikes(likes - 1);
@@ -107,7 +106,7 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 				</div>
 			</CardHeader>
 			<CardContent className='px-6'>
-				<Link href={`/recipe/${recipe.id}`}>
+				<Link href={`/recipe/${recipe.slug}`}>
 					<CardTitle className='py-4 text-lg'>
 						{recipe.title}
 					</CardTitle>
@@ -116,8 +115,8 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 							src={'http://localhost:8080/pictures/' + pictureId}
 							alt={recipe.title || 'Recipe image'}
 							className='mb-4 rounded-lg object-cover'
-							width={600}
-							height={400}
+							width={800}
+							height={800}
 							priority
 						/>
 					)}

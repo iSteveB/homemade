@@ -15,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { Express, Response } from 'express';
 import { UsersService } from './users.service';
-import { Prisma } from '@prisma/client';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RequestWithUser } from 'src/auth/jwt.strategy';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -104,20 +103,20 @@ export class UsersController {
   @Patch()
   async updateUser(
     @Request() request: RequestWithUser,
-    @Body()
-    updateUserDto: Prisma.UserUpdateInput,
+    @Body('updateUserDto') updateUserDto: string,
     @Query('fileType') fileType: 'avatar' | 'banner' | undefined,
     @UploadedFile() file: Express.Multer.File,
   ) {
     const id = request.user.id;
-    const submittedFile = file;
+    const parsedUpdateUserDto = updateUserDto ? JSON.parse(updateUserDto) : {};
+
     return this.usersService.updateUser(
       id,
       {
-        ...updateUserDto,
+        ...parsedUpdateUserDto,
         updatedAt: new Date(),
       },
-      submittedFile,
+      file,
       fileType,
     );
   }
