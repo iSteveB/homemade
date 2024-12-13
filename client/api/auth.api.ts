@@ -1,12 +1,15 @@
 import { LoginCredentials, SignupCredentials } from '@/types/auth';
 
 export const signup = async (credentials: SignupCredentials) => {
-	const response = await fetch('http://localhost:8080/auth/register', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(credentials),
-		credentials: 'include',
-	});
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_NEXT_PUBLIC_BACKEND_URL}/auth/register`,
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(credentials),
+			credentials: 'include',
+		}
+	);
 
 	if (!response.ok) {
 		const errorData = await response.json();
@@ -16,12 +19,15 @@ export const signup = async (credentials: SignupCredentials) => {
 };
 
 export const login = async (credentials: LoginCredentials) => {
-	const response = await fetch('http://localhost:8080/auth/login', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(credentials),
-		credentials: 'include',
-	});
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(credentials),
+			credentials: 'include',
+		}
+	);
 
 	if (!response.ok) {
 		const errorData = await response.json();

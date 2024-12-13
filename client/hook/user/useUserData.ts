@@ -5,10 +5,13 @@ const useUserData = () => {
 	const userData = useQuery<User, Error>({
 		queryKey: ['user'],
 		queryFn: async () => {
-			const response = await fetch('http://localhost:8080/auth/', {
-				method: 'GET',
-				credentials: 'include',
-			});
+			const response = await fetch(
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/`,
+				{
+					method: 'GET',
+					credentials: 'include',
+				}
+			);
 			if (!response.ok) {
 				const errorData = await response.json();
 				throw new Error(

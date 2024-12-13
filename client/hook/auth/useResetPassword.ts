@@ -5,7 +5,7 @@ const useResetPassword = () => {
 	const resetPasswordMutation = useMutation<void, Error, ResetPassword>({
 		mutationFn: async (email) => {
 			const response = await fetch(
-				'http://localhost:8080/auth/reset-password',
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/reset-password`,
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },

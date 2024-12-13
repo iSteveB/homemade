@@ -13,7 +13,7 @@ const useProfileUpdate = () => {
 	const updateProfileMutation = useMutation({
 		mutationFn: async (data: ProfileUpdateData) => {
 			const formData = new FormData();
-			
+
 			// Handle text data
 			const updateData: any = {};
 			if (data.name) updateData.name = data.name;
@@ -23,11 +23,14 @@ const useProfileUpdate = () => {
 			// Handle files if present
 			if (data.avatar) {
 				formData.append('file', data.avatar);
-				const response = await fetch('http://localhost:8080/users?fileType=avatar', {
-					method: 'PATCH',
-					credentials: 'include',
-					body: formData,
-				});
+				const response = await fetch(
+					`${process.env.NEXT_PUBLIC_BACKEND_URL}/users?fileType=avatar`,
+					{
+						method: 'PATCH',
+						credentials: 'include',
+						body: formData,
+					}
+				);
 				if (!response.ok) {
 					const error = await response.json();
 					throw new Error(error.message);
@@ -37,12 +40,18 @@ const useProfileUpdate = () => {
 			if (data.banner) {
 				const bannerFormData = new FormData();
 				bannerFormData.append('file', data.banner);
-				bannerFormData.append('updateUserDto', JSON.stringify(updateData));
-				const response = await fetch('http://localhost:8080/users?fileType=banner', {
-					method: 'PATCH',
-					credentials: 'include',
-					body: bannerFormData,
-				});
+				bannerFormData.append(
+					'updateUserDto',
+					JSON.stringify(updateData)
+				);
+				const response = await fetch(
+					`${process.env.NEXT_PUBLIC_BACKEND_URL}/users?fileType=banner`,
+					{
+						method: 'PATCH',
+						credentials: 'include',
+						body: bannerFormData,
+					}
+				);
 				if (!response.ok) {
 					const error = await response.json();
 					throw new Error(error.message);
@@ -51,11 +60,14 @@ const useProfileUpdate = () => {
 
 			// If there's only text data or no files were uploaded
 			if (!data.avatar && !data.banner) {
-				const response = await fetch('http://localhost:8080/users', {
-					method: 'PATCH',
-					credentials: 'include',
-					body: formData,
-				});
+				const response = await fetch(
+					`${process.env.NEXT_PUBLIC_BACKEND_URL}/users`,
+					{
+						method: 'PATCH',
+						credentials: 'include',
+						body: formData,
+					}
+				);
 				if (!response.ok) {
 					const error = await response.json();
 					throw new Error(error.message);

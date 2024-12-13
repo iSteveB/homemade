@@ -54,6 +54,6 @@ export const getPictureEndpoint = (
 	type: 'avatar' | 'banner',
 	timestamp?: number
 ) => {
-	const baseUrl = `http://localhost:8080/users/${username}/${type}`;
+	const baseUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${username}/${type}`;
 	return timestamp ? `${baseUrl}?t=${timestamp}` : baseUrl;
 };

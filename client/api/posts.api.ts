@@ -1,10 +1,13 @@
 import { FetchRecipe, CreateRecipe } from '@/types/recipes';
 
 export const getAllRecipes = async () => {
-	const response = await fetch('http://localhost:8080/recipes', {
-		method: 'GET',
-		credentials: 'include',
-	});
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/recipes`,
+		{
+			method: 'GET',
+			credentials: 'include',
+		}
+	);
 
 	if (!response.ok) {
 		const errorData = await response.json();
@@ -17,10 +20,13 @@ export const getAllRecipes = async () => {
 };
 
 export const getOneRecipe = async (id: string) => {
-	const response = await fetch(`http://localhost:8080/recipes/${id}`, {
-		method: 'GET',
-		credentials: 'include',
-	});
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/recipes/${id}`,
+		{
+			method: 'GET',
+			credentials: 'include',
+		}
+	);
 
 	if (!response.ok) {
 		const errorData = await response.json();
@@ -33,10 +39,13 @@ export const getOneRecipe = async (id: string) => {
 };
 
 export const getUserRecipes = async (): Promise<FetchRecipe[]> => {
-	const response = await fetch(`http://localhost:8080/recipes/user`, {
-		method: 'GET',
-		credentials: 'include',
-	});
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/recipes/user`,
+		{
+			method: 'GET',
+			credentials: 'include',
+		}
+	);
 
 	if (!response.ok) {
 		const errorData = await response.json();
@@ -52,11 +61,14 @@ export const getUserRecipes = async (): Promise<FetchRecipe[]> => {
 export const createRecipe = async (
 	formData: FormData
 ): Promise<CreateRecipe> => {
-	const response = await fetch('http://localhost:8080/recipes', {
-		method: 'POST',
-		body: formData,
-		credentials: 'include',
-	});
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/recipes`,
+		{
+			method: 'POST',
+			body: formData,
+			credentials: 'include',
+		}
+	);
 
 	if (!response.ok) {
 		const errorData = await response.json().catch(() => null);
@@ -73,11 +85,14 @@ export const updateRecipe = async (
 	recipeId: string,
 	formData: FormData
 ): Promise<CreateRecipe> => {
-	const response = await fetch(`http://localhost:8080/recipes/${recipeId}`, {
-		method: 'PATCH',
-		body: formData,
-		credentials: 'include',
-	});
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/recipes/${recipeId}`,
+		{
+			method: 'PATCH',
+			body: formData,
+			credentials: 'include',
+		}
+	);
 
 	if (!response.ok) {
 		throw new Error(
@@ -89,11 +104,14 @@ export const updateRecipe = async (
 };
 
 export const deleteRecipe = async (recipeId: string): Promise<FetchRecipe> => {
-	const response = await fetch(`http://localhost:8080/recipes/${recipeId}`, {
-		method: 'DELETE',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'include',
-	});
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/recipes/${recipeId}`,
+		{
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
+		}
+	);
 
 	if (!response.ok) {
 		throw new Error(

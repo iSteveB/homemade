@@ -36,6 +36,7 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 	const [isShared, setIsShared] = useState(false);
 	const [showComments, setShowComments] = useState(false);
 	const pictureId = recipe?.pictures?.[0]?.pictureId ?? '';
+	const avatarUrl = getPictureEndpoint(recipe.user.username, 'avatar');
 
 	const handleLike = () => {
 		if (isLiked) {
@@ -67,10 +68,7 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 				<div className='flex items-start justify-between'>
 					<div className='flex items-center space-x-4'>
 						<UserAvatar
-							src={getPictureEndpoint(
-								recipe.user.username,
-								'avatar'
-							)}
+							src={avatarUrl}
 							alt={`Photo de profil de ${recipe.user.name}`}
 							username={recipe.user.username}
 							className='size-16'
@@ -112,7 +110,7 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 					</CardTitle>
 					{recipe.pictures && recipe.pictures.length > 0 && (
 						<Image
-							src={'http://localhost:8080/pictures/' + pictureId}
+							src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/pictures/${pictureId}`}
 							alt={recipe.title || 'Recipe image'}
 							className='mb-4 rounded-lg object-cover'
 							width={800}

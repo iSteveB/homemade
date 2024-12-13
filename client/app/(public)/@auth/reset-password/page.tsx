@@ -12,7 +12,7 @@ const ResetPassword = async ({
 	if (token) {
 		try {
 			const response = await fetch(
-				`http://localhost:8080/auth/verify-reset-password-token?token=${token}`,
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify-reset-password-token?token=${token}`,
 				{
 					headers: { 'Content-Type': 'application/json' },
 					cache: 'no-store',

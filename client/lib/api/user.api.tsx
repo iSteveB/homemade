@@ -1,29 +1,34 @@
 export const getUserById = async (id: string) => {
-  const response = await fetch(`http://localhost:8080/users/${id}`);
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${id}`
+	);
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch user');
-  }
+	if (!response.ok) {
+		throw new Error('Failed to fetch user');
+	}
 
-  return response.json();
+	return response.json();
 };
 
 export const getUserByUsername = async (username: string) => {
-  const response = await fetch(`http://localhost:8080/users/${username}`);
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${username}`
+	);
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch user');
-  }
-    return response.json();
-}
-
-export const getAllUsers = async () => {
-  const response = await fetch('http://localhost:8080/users');
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch users');
-  }
-
-  return response.json();
+	if (!response.ok) {
+		throw new Error('Failed to fetch user');
+	}
+	return response.json();
 };
 
+export const getAllUsers = async () => {
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/users`
+	);
+
+	if (!response.ok) {
+		throw new Error('Failed to fetch users');
+	}
+
+	return response.json();
+};
