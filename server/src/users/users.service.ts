@@ -96,18 +96,21 @@ export class UsersService {
     };
 
     if (submittedFile && fileType) {
+      console.log(fileType);
       const fileKey = await this.awsS3Service.uploadFile(submittedFile, {
         userId: id,
         fileType,
       });
 
-      // if (fileType === 'avatar') {
-      //   dataToUpdate.avatarFileKey = fileKey;
-      // } else if (fileType === 'banner') {
-      //   dataToUpdate.bannerFileKey = fileKey;
-      // } else {
-      //   throw new Error('Invalid file type');
-      // }
+      console.log(fileKey);
+
+      if (fileType === 'avatar') {
+        dataToUpdate.avatarFileKey = fileKey.fileKey;
+      } else if (fileType === 'banner') {
+        dataToUpdate.bannerFileKey = fileKey.fileKey;
+      } else {
+        throw new Error('Invalid file type');
+      }
     }
 
     return await this.databaseService.user.update({

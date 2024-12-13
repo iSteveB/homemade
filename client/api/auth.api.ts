@@ -2,7 +2,7 @@ import { LoginCredentials, SignupCredentials } from '@/types/auth';
 
 export const signup = async (credentials: SignupCredentials) => {
 	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_NEXT_PUBLIC_BACKEND_URL}/auth/register`,
+		`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`,
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },

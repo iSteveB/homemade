@@ -90,7 +90,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      sameSite: 'none',
+      sameSite: 'lax',
       path: '/',
     });
     return { message: 'Login successful' };
@@ -109,7 +109,7 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         maxAge: 0,
-        sameSite: 'none',
+        sameSite: 'lax',
         path: '/',
       });
       throw new NotFoundException('User not Found');
@@ -123,7 +123,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       maxAge: 0,
-      sameSite: 'none',
+      sameSite: 'lax',
       path: '/',
     });
     return { message: 'Déconnexion réussie' };
