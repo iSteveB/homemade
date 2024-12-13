@@ -1,25 +1,27 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const httpsOptions = {
+    key: fs.readFileSync('./secrets/localhost-key.pem'),
+    cert: fs.readFileSync('./secrets/localhost-cert.pem'),
+  };
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    httpsOptions,
+  });
   app.use(cookieParser());
-  app.enableCors({ origin: 'https://localhost:3000', credentials: true });
+  app.enableCors({ origin: process.env.CLIENT_URL, credentials: true });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Supprimer les champs non définis dans le DTO
       transform: true, // Convertir les champs en types appropriés
     }),
   );
-
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-    prefix: '/uploads/',
-  });
 
   const config = new DocumentBuilder()
     .setTitle('Homemade Server')
@@ -29,6 +31,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 
-  await app.listen(8080);
+  await app.listen(process.env.PORT || 8080);
 }
 bootstrap();
