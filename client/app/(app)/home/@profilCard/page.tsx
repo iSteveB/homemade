@@ -12,7 +12,7 @@ export default function ProfileCard() {
 	return (
 		<Card className='mx-auto w-full max-w-md overflow-hidden'>
 			{/* Banner */}
-			<div className='relative h-24'>
+			<div className='relative h-24 max-h-24 overflow-hidden'>
 				<Banner
 					src={getPictureEndpoint(userData.username, 'banner')}
 					alt={`Profile banner of ${userData.username}`}
