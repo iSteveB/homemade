@@ -9,13 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, Trash2 } from 'lucide-react';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
 import { CreateRecipe } from '@/types/recipes';
 
 interface CategoriesTagsStepProps {
@@ -39,7 +32,7 @@ const CategoriesTagsStep: React.FC<CategoriesTagsStepProps> = ({
 		'DESSERT',
 		'DRINK',
 		'SAUCE',
-		'ACCOMPANIMENT',
+		'SIDE',
 	] as const;
 
 	const categoryLabels: { [key: string]: string } = {
@@ -48,7 +41,7 @@ const CategoriesTagsStep: React.FC<CategoriesTagsStepProps> = ({
 		DESSERT: 'Dessert',
 		DRINK: 'Boisson',
 		SAUCE: 'Sauce',
-		ACCOMPANIMENT: 'Accompagnement',
+		SIDE: 'Accompagnement',
 	};
 
 	const isCategorySelected = (category: string) => {
@@ -95,17 +88,8 @@ const CategoriesTagsStep: React.FC<CategoriesTagsStepProps> = ({
 				</div>
 
 				<div className='space-y-4'>
-					<div className='flex items-center justify-between'>
-						<Label>Tags</Label>
-						<Button
-							variant='outline'
-							size='sm'
-							onClick={(e) => addField('tags', e)}>
-							<Plus className='mr-2 size-4' />
-							Ajouter un tag
-						</Button>
-					</div>
 					<div className='space-y-2'>
+						<Label>Tags</Label>
 						{recipe.tags?.map((tag, index) => (
 							<div
 								key={index}
@@ -129,10 +113,19 @@ const CategoriesTagsStep: React.FC<CategoriesTagsStepProps> = ({
 							</div>
 						))}
 					</div>
-					<p className='text-sm'>
-						Ajoutez des tags pour décrire votre recette (ex:
-						végétarien, italien, rapide, etc.)
-					</p>
+					<div className='flex items-center justify-between'>
+						<p className='text-sm'>
+							Ajoutez des tags pour décrire votre recette (ex:
+							végétarien, italien, rapide, etc.)
+						</p>
+						<Button
+							variant='outline'
+							size='sm'
+							onClick={(e) => addField('tags', e)}>
+							<Plus className='mr-2 size-4' />
+							Ajouter un tag
+						</Button>
+					</div>
 				</div>
 			</CardContent>
 		</>

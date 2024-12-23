@@ -39,16 +39,8 @@ const InstructionsStep: React.FC<InstructionsStepProps> = ({
 			</CardHeader>
 			<CardContent className='space-y-6'>
 				<div className='space-y-4'>
-					<div className='flex items-center justify-between'>
-						<Label>Étapes</Label>
-						<Button
-							variant='outline'
-							size='sm'
-							onClick={(e) => addField('steps', e)}>
-							<Plus className='mr-2 size-4' />
-							Ajouter une étape
-						</Button>
-					</div>
+					<Label>Étapes</Label>
+
 					{recipe.steps?.map((step, index) => (
 						<div key={index} className='flex items-start space-x-2'>
 							<div className='flex h-24 w-8 items-center justify-center rounded-md border text-sm'>
@@ -72,6 +64,15 @@ const InstructionsStep: React.FC<InstructionsStepProps> = ({
 							</Button>
 						</div>
 					))}
+					<div className='flex items-center justify-end'>
+						<Button
+							variant='outline'
+							size='sm'
+							onClick={(e) => addField('steps', e)}>
+							<Plus className='mr-2 size-4' />
+							Ajouter une étape
+						</Button>
+					</div>
 				</div>
 
 				<PictureUpload

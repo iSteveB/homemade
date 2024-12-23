@@ -94,7 +94,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ recipe, updateRecipe }) =
                             <Input
                                 id="preparation"
                                 type="number"
-                                value={recipe.duration?.preparation || 0}
+                                value={recipe.duration?.preparation || ''}
                                 onChange={(e) =>
                                     updateRecipe('duration', {
                                         ...recipe.duration,

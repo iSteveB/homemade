@@ -39,10 +39,10 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 		servings: 1,
 		duration: { preparation: 0, cooking: 0, rest: 0 },
 		categories: [],
-		tags: [],
-		ingredients: [],
-		ustensils: [],
-		steps: [],
+		tags: [{ name: '' }],
+		ingredients: [{ name: '', quantity: 0, unit: '' }],
+		ustensils: [{ name: '' }],
+		steps: [{ order: 1, description: '' }],
 		pictures: [],
 	});
 
@@ -126,7 +126,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 		e.preventDefault();
 		const result = CreateRecipeSchema.safeParse(recipe);
 		if (!result.success) {
-			console.error('Validation failde:',result.error);
+			console.error('Validation failde:', result.error);
 			return;
 		}
 
@@ -151,7 +151,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 			ustensils: recipe.ustensils,
 			steps: recipe.steps,
 		};
-	
+
 		// Ajouter l'objet JSON des données
 		formData.append('data', JSON.stringify(recipeData));
 
