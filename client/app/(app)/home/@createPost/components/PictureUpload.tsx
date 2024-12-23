@@ -3,10 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
-import { Picture } from '@/types/recipes';
+import { PictureInput } from '@/types/recipes';
 
 interface PictureUploadProps {
-	pictures: Picture[];
+	pictures: PictureInput[];
 	maxPictures?: number;
 	onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	onRemove: (index: number) => void;

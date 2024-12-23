@@ -1,7 +1,7 @@
-"use client";
+'use client';
 import React from 'react';
 import RecipeSummary from '@/components/post/RecipeSummary';
-import {useGetAllRecipes} from '@/hook/posts/useGetRecipes';
+import { useGetAllRecipes } from '@/hook/posts/useGetRecipes';
 
 const Feed = () => {
 	const { recipes, isError, isLoading } = useGetAllRecipes();
@@ -15,9 +15,11 @@ const Feed = () => {
 	}
 	return (
 		<div>
-			{recipes?.map((recipe) => (
-				<RecipeSummary key={recipe.id} recipe={recipe} />
-			))}
+			{recipes
+				?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+				.map((recipe) => (
+					<RecipeSummary key={recipe.id} recipe={recipe} />
+				))}
 		</div>
 	);
 };

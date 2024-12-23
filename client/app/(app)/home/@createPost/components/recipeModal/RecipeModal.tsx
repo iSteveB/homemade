@@ -124,9 +124,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-
 		const result = CreateRecipeSchema.safeParse(recipe);
 		if (!result.success) {
+			console.error('Validation failde:',result.error);
 			return;
 		}
 
@@ -137,49 +137,23 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 			if (picture.file) formData.append('pictures', picture.file);
 		});
 
-		// Add scalar fields
-		formData.append('title', recipe.title);
-		formData.append('servings', recipe.servings.toString());
-
-		// Add optional scalar fields
-		if (recipe.description)
-			formData.append('description', recipe.description);
-		if (recipe.difficulty) formData.append('difficulty', recipe.difficulty);
-		if (recipe.cost) formData.append('cost', recipe.cost);
-
-		// Add duration as a nested object
-		if (recipe.duration) {
-			Object.entries(recipe.duration).forEach(([key, value]) => {
-				formData.append(`duration.${key}`, value.toString());
-			});
-		}
-
-		// Add arrays using NestJS array format
-		recipe.categories?.forEach((category, index) => {
-			formData.append(`categories.${index}.name`, category.name);
-		});
-
-		recipe.tags?.forEach((tag, index) => {
-			formData.append(`tags.${index}.name`, tag.name);
-		});
-
-		recipe.ingredients?.forEach((ingredient, index) => {
-			formData.append(`ingredients.${index}.name`, ingredient.name);
-			formData.append(
-				`ingredients.${index}.quantity`,
-				ingredient.quantity.toString()
-			);
-			formData.append(`ingredients.${index}.unit`, ingredient.unit);
-		});
-
-		recipe.ustensils?.forEach((ustensil, index) => {
-			formData.append(`ustensils.${index}.name`, ustensil.name);
-		});
-
-		recipe.steps?.forEach((step, index) => {
-			formData.append(`steps.${index}.description`, step.description);
-			formData.append(`steps.${index}.order`, step.order.toString());
-		});
+		// Créer un objet avec toutes les données sauf les photos
+		const recipeData = {
+			title: recipe.title,
+			description: recipe.description,
+			difficulty: recipe.difficulty,
+			cost: recipe.cost,
+			servings: recipe.servings,
+			duration: recipe.duration,
+			categories: recipe.categories,
+			tags: recipe.tags,
+			ingredients: recipe.ingredients,
+			ustensils: recipe.ustensils,
+			steps: recipe.steps,
+		};
+	
+		// Ajouter l'objet JSON des données
+		formData.append('data', JSON.stringify(recipeData));
 
 		createRecipe(formData);
 		setIsRecipesModalOpen(false);

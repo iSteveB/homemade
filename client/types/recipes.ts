@@ -56,7 +56,7 @@ const UstensilSchema = UstensilInputSchema.extend({
 
 const StepSchema = StepInputSchema; // Supprimez cet endroit si des champs supplémentaires sont présents lors de la récupération
 
-const PictureSchema = z.object({
+export const PictureSchema = z.object({
 	recipeId: z.string().uuid(),
 	pictureId: z.string().uuid(),
 	picture: z.object({
@@ -73,7 +73,8 @@ const UserSchema = z.object({
 	username: z.string(),
 });
 
-export type Picture = z.infer<typeof PictureInputSchema>;
+export type Picture = z.infer<typeof PictureSchema>;
+export type PictureInput = z.infer<typeof PictureInputSchema>;
 export type Category = z.infer<typeof CategoryInputSchema>;
 export type Tag = z.infer<typeof TagInputSchema>;
 export type Ingredient = z.infer<typeof IngredientInputSchema>;

@@ -16,7 +16,6 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		// eslint-disable-next-line tailwindcss/no-custom-classname
 		<html lang='fr' className='light'>
 			<body className={`${inter.className} bg-neutral dark:bg-dark-neutral/90`}>
 				<ReactQueryProvider>

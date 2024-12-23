@@ -3,6 +3,7 @@ import { TabsContent } from '@/components/ui/tabs';
 import { useGetUserRecipes } from '@/hook/posts/useGetRecipes';
 import { FetchRecipe } from '@/types/recipes';
 import RecipeSummary from '@/components/post/RecipeSummary';
+
 const PostsTab = () => {
 	const { userRecipes } = useGetUserRecipes();
 

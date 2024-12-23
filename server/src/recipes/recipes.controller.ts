@@ -52,17 +52,27 @@ export class RecipesController {
     }),
   )
   async create(
-    @Body() createRecipeDto: CreateRecipeDto,
+    @Body('data') dataString: string,
     @Request() request: RequestWithUser,
     @UploadedFiles() pictures?: Express.Multer.File[],
   ): Promise<Recipe> {
     try {
+      const createRecipeDto: CreateRecipeDto = JSON.parse(dataString);
+
+      // Validate the parsed data
+      if (!createRecipeDto.title) {
+        throw new BadRequestException('Le titre est requis');
+      }
+
       return await this.recipesService.create(
         createRecipeDto,
         request.user.id,
         pictures,
       );
     } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw new BadRequestException('Invalid JSON format in data field');
+      }
       console.error('Error creating recipe:', error);
       if (error?.response?.message) {
         throw new BadRequestException(error.response.message);

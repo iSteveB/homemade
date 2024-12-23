@@ -20,6 +20,7 @@ import useThemeStore from '@/lib/store/useThemeStore';
 import useUserData from '@/hook/user/useUserData';
 import useLogout from '@/hook/auth/useLogout';
 import { getPictureEndpoint } from '@/lib/utils';
+import UserAvatar from '../UserAvatar';
 
 // Mock notifications data
 const notifications = [
@@ -110,12 +111,14 @@ export default function Header() {
 						href={`/profile/${userData?.username}`}
 						className='overflow-hidden rounded-lg'
 						aria-label='Go to profile'>
-						<Image
-							src={userData?.username ? getPictureEndpoint(userData.username, 'avatar') : '/default-avatar.png'}
-							alt='Profile picture'
-							width={32}
-							height={32}
-							className='rounded-lg'
+						<UserAvatar
+							src={getPictureEndpoint(
+								userData?.username || '',
+								'avatar'
+							)}
+							alt={`Profile picture of ${userData?.username}`}
+							username={userData?.username || ''}
+							className='rounded-lg size-12'
 						/>
 					</Link>
 

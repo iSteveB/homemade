@@ -17,8 +17,8 @@ export default function CreatePost() {
 		setInputValue(e.target.value);
 	};
 
-	const handleSend = () => {
-		console.log('Sending post:', inputValue);
+	const handleSend = (e: React.FormEvent) => {
+		e.preventDefault();
 		setInputValue('');
 	};
 
@@ -51,6 +51,7 @@ export default function CreatePost() {
 					<Button
 						variant='outline'
 						className='flex-1'
+						disabled
 						onClick={handleMediaClick}>
 						<ImagePlay className='mr-2 size-4' />
 						Media
@@ -58,6 +59,7 @@ export default function CreatePost() {
 					<Button
 						variant='outline'
 						className='flex-1'
+						disabled
 						onClick={() => setIsThreadModalOpen(true)}>
 						<MessageSquare className='mr-2 size-4' />
 						Thread
