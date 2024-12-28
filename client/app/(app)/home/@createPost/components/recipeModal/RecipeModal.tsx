@@ -105,7 +105,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 		}
 	};
 
-	const removePicture = (index: number) => {
+	const removePicture = (index: number, e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
 		setRecipe((prev) => ({
 			...prev,
 			pictures: prev.pictures?.filter((_, i) => i !== index),

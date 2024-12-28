@@ -9,7 +9,7 @@ interface PictureUploadProps {
 	pictures: PictureInput[];
 	maxPictures?: number;
 	onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-	onRemove: (index: number) => void;
+	onRemove: (index: number, e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const PictureUpload: React.FC<PictureUploadProps> = ({
@@ -62,7 +62,7 @@ const PictureUpload: React.FC<PictureUploadProps> = ({
 							variant='outline'
 							size='icon'
 							className='absolute right-2 top-2 size-6'
-							onClick={() => onRemove(index)}>
+							onClick={(e) => onRemove(index, e)}>
 							<X className='size-4' />
 						</Button>
 					</div>

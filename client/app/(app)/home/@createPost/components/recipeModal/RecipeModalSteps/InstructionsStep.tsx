@@ -18,7 +18,7 @@ interface InstructionsStepProps {
 	updateField: (field: 'steps', index: number, value: any) => void;
 	removeField: (field: 'steps', index: number) => void;
 	handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-	removePicture: (index: number) => void;
+	removePicture: (index: number, e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const InstructionsStep: React.FC<InstructionsStepProps> = ({
