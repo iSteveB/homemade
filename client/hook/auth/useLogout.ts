@@ -18,6 +18,7 @@ const useLogout = () => {
 		}
 
 		router.push('/');
+		localStorage.removeItem('user');
 		return response.json();
 	};
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Request,
@@ -15,7 +16,6 @@ import { LocalAuthGuard } from '../common/guards/local-auth.guard';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RequestWithUser } from './jwt.strategy';
 import { CreateUserDto } from './dto/create-user.dto';
-import { DatabaseService } from 'src/database/database.service';
 import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
@@ -23,7 +23,6 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-    private readonly databaseService: DatabaseService,
   ) {}
 
   @Post('register')
@@ -93,7 +92,19 @@ export class AuthController {
       sameSite: 'lax',
       path: '/',
     });
-    return { message: 'Login successful' };
+
+    const {
+      id,
+      avatarFileKey,
+      bannerFileKey,
+      isAdmin,
+      isResettingPassword,
+      resetPasswordToken,
+      email,
+      ...safeUser
+    } = request.user;
+
+    return { user: safeUser };
   }
 
   @UseGuards(JwtAuthGuard)

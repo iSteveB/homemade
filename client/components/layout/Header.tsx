@@ -13,7 +13,6 @@ import { MessageSquare, Bell, Settings, LogOut } from 'lucide-react';
 import Logo from '../ui/Logo';
 import SearchBar from '../ui/SearchBar';
 import Link from 'next/link';
-import Image from 'next/image';
 // import { Switch } from '@/components/ui/switch'
 import { useTheme } from '@/hook/useTheme';
 import useThemeStore from '@/lib/store/useThemeStore';

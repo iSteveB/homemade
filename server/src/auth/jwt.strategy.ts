@@ -3,7 +3,15 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 
-export type UserPayload = { id: string; email: string };
+export type UserPayload = {
+  id: string;
+  email: string;
+  avatarFileKey?: string;
+  bannerFileKey?: string;
+  isAdmin?: boolean;
+  isResettingPassword?: boolean;
+  resetPasswordToken?: string;
+};
 export type RequestWithUser = Request & { user: UserPayload };
 
 @Injectable()

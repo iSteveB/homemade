@@ -7,9 +7,13 @@ const useLogin = () => {
 	const router = useRouter();
 
 	const loginMutation = useMutation<User, Error, LoginCredentials>({
+		mutationKey: ['login'],
 		mutationFn: (credentials: LoginCredentials) => login(credentials),
-		onSuccess: () => {
+		onSuccess: (data) => {
 			router.push('/home');
+			console.log('User logged in:', data);
+			localStorage.setItem('user', JSON.stringify(data));
+
 		},
 	});
 

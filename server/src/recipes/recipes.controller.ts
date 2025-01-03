@@ -12,12 +12,12 @@ import {
   UseInterceptors,
   UploadedFiles,
   BadRequestException,
+  UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Recipe } from '@prisma/client';
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipe.dto';
-
-import { PoliciesGuard } from 'src/common/guards/policies.guard';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RequestWithUser } from 'src/auth/jwt.strategy';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -136,8 +136,15 @@ export class RecipesController {
   }
 
   @Delete(':id')
-  @UseGuards(PoliciesGuard)
-  delete(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  async delete(@Param('id') id: string, @Request() request: RequestWithUser) {
+    const recipe = await this.recipesService.findOne(id);
+    if (!recipe) {
+      throw new NotFoundException("La recette n'existe pas");
+    }
+    if (recipe.userId !== request.user.id) {
+      throw new UnauthorizedException("Vous n'avez pas les droits");
+    }
     return this.recipesService.delete(id);
   }
 }

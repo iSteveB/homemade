@@ -34,5 +34,7 @@ export const login = async (credentials: LoginCredentials) => {
 		throw new Error(errorData.message || 'Login failed');
 	}
 
-	return await response.json();
+	const user = await response.json();
+
+	return user;
 };

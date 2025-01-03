@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import {
 	Card,
 	CardContent,
@@ -20,7 +21,8 @@ import { FetchRecipe } from '@/types/recipes';
 import { getPictureEndpoint, getTimeElapsed } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import RecipeDetails from './RecipeDetails';
-import Link from 'next/link';
+import { useDeleteRecipe } from '@/hook/posts/useDeleteRecipe';
+import ConfirmationModal from '../ConfirmationModal';
 
 interface RecipeSummaryProps {
 	recipe: FetchRecipe;
@@ -37,6 +39,26 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const pictureId = recipe?.pictures?.[0]?.pictureId ?? '';
 	const avatarUrl = getPictureEndpoint(recipe.user.username, 'avatar');
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const { deleteRecipe, deleteRecipeIsLoading } = useDeleteRecipe();
+
+	const currentUsername = localStorage.getItem('user');
+	const parsedUser = currentUsername ? JSON.parse(currentUsername) : null;
+	const isOwner = parsedUser.user.username === recipe.user.username;
+
+
+	const handleDelete = () => {
+		deleteRecipe(recipe.id, {
+			onSuccess: () => {
+				setIsDeleteModalOpen(false);
+			},
+			onError: (error) => {
+				setIsDeleteModalOpen(false);
+				alert(error);
+
+			}
+		});
+	};
 
 	const handleLike = () => {
 		if (isLiked) {
@@ -100,9 +122,21 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 									</span>
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent align='end'>
-								<DropdownMenuItem>Edit</DropdownMenuItem>
-								<DropdownMenuItem>Delete</DropdownMenuItem>
+							<DropdownMenuContent align='end' >
+								{isOwner && (
+									<>
+										<DropdownMenuItem className='cursor-pointer'>
+											Modifier
+										</DropdownMenuItem>
+										<DropdownMenuItem
+											className='text-red-600'
+											onClick={() =>
+												setIsDeleteModalOpen(true)
+											}>
+											Supprimer
+										</DropdownMenuItem>
+									</>
+								)}
 								<DropdownMenuItem>Report</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
@@ -188,6 +222,15 @@ export default function RecipeSummary({ recipe }: RecipeSummaryProps) {
 					</div>
 				)}
 			</Card>
+
+			<ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Supprimer mon post"
+        description="Êtes-vous sûr de vouloir supprimer ce post ? Cette action est irréversible."
+        isLoading={deleteRecipeIsLoading}
+      />
 
 			<RecipeDetails
 				isOpen={isModalOpen}
